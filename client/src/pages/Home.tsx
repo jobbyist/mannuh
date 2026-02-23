@@ -1,31 +1,253 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
 import { getLoginUrl } from "@/const";
-import { Streamdown } from 'streamdown';
+import { Link } from "wouter";
+import { Users, Play, Compass, ArrowRight, Heart, BookOpen, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import Layout from "@/components/Layout";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
+  }),
+};
+
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
-
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
-    </div>
+    <Layout>
+      <div className="relative overflow-hidden">
+        {/* Geometric decorations */}
+        <div className="absolute top-20 right-[10%] w-64 h-64 geo-circle opacity-40 pointer-events-none" />
+        <div className="absolute top-40 left-[5%] w-32 h-32 geo-circle-pink opacity-30 pointer-events-none" />
+        <div className="absolute bottom-20 right-[20%] w-20 h-20 geo-square opacity-20 pointer-events-none" />
+        <div className="absolute top-[60%] left-[15%] w-16 h-16 rounded-full bg-[oklch(0.82_0.06_240_/_0.1)] pointer-events-none" />
+
+        {/* Hero Section */}
+        <section className="container pt-20 pb-28 md:pt-32 md:pb-40">
+          <div className="max-w-3xl">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+              custom={0}
+            >
+              <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[oklch(0.82_0.06_240_/_0.15)] text-primary text-xs font-semibold tracking-wide uppercase mb-6">
+                <Heart className="w-3 h-3" />
+                Faith-based community
+              </span>
+            </motion.div>
+
+            <motion.h1
+              className="text-5xl md:text-7xl font-black tracking-tight leading-[1.05] text-foreground mb-6"
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+              custom={1}
+            >
+              Grow together
+              <br />
+              in <span className="text-primary">faith</span> &{" "}
+              <span className="text-[oklch(0.65_0.08_10)]">fellowship</span>
+            </motion.h1>
+
+            <motion.p
+              className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-xl mb-10 font-light"
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+              custom={2}
+            >
+              Join virtual cell groups, discover inspiring Christian content, and connect
+              with creators who share your faith journey.
+            </motion.p>
+
+            <motion.div
+              className="flex flex-wrap gap-4"
+              initial="hidden"
+              animate="visible"
+              variants={fadeUp}
+              custom={3}
+            >
+              {isAuthenticated ? (
+                <>
+                  <Button size="lg" asChild className="rounded-xl px-8 h-12 text-base font-semibold">
+                    <Link href="/groups">
+                      Explore Groups
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild className="rounded-xl px-8 h-12 text-base font-semibold bg-white">
+                    <Link href="/reels">Watch Reels</Link>
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button size="lg" asChild className="rounded-xl px-8 h-12 text-base font-semibold">
+                    <a href={getLoginUrl()}>
+                      Get Started
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </a>
+                  </Button>
+                  <Button size="lg" variant="outline" asChild className="rounded-xl px-8 h-12 text-base font-semibold bg-white">
+                    <Link href="/discover">Discover Content</Link>
+                  </Button>
+                </>
+              )}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="container pb-28">
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: Users,
+                title: "Cell Groups",
+                desc: "Create or join intimate virtual groups for Bible study, prayer, and fellowship with video conferencing.",
+                color: "bg-primary/10 text-primary",
+                href: "/groups",
+              },
+              {
+                icon: Play,
+                title: "Creator Reels",
+                desc: "Watch and share short-form Christian video content from creators you love. Follow, like, and engage.",
+                color: "bg-[oklch(0.85_0.06_10_/_0.3)] text-[oklch(0.45_0.08_10)]",
+                href: "/reels",
+              },
+              {
+                icon: Compass,
+                title: "Discover",
+                desc: "Explore curated Christian stories, articles, and resources aggregated from trusted sources worldwide.",
+                color: "bg-[oklch(0.82_0.06_240_/_0.15)] text-[oklch(0.45_0.1_240)]",
+                href: "/discover",
+              },
+            ].map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                variants={fadeUp}
+                custom={i}
+              >
+                <Link href={feature.href}>
+                  <div className="group bg-white rounded-2xl p-8 border border-border/50 hover:border-primary/20 hover:shadow-lg transition-all duration-300 cursor-pointer h-full">
+                    <div className={`w-12 h-12 rounded-xl ${feature.color} flex items-center justify-center mb-5`}>
+                      <feature.icon className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed text-sm">{feature.desc}</p>
+                    <div className="mt-5 flex items-center gap-1 text-primary text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                      Explore <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Values Section */}
+        <section className="bg-white border-y border-border/50">
+          <div className="container py-24">
+            <motion.div
+              className="text-center mb-16"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={0}
+            >
+              <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-4">
+                Built for the body of Christ
+              </h2>
+              <p className="text-muted-foreground text-lg max-w-lg mx-auto font-light">
+                A safe, moderated space where believers connect, grow, and inspire one another.
+              </p>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {[
+                { icon: Heart, title: "Community", desc: "Authentic fellowship in small groups" },
+                { icon: BookOpen, title: "Scripture", desc: "Content rooted in God's Word" },
+                { icon: Play, title: "Creativity", desc: "Express faith through video reels" },
+                { icon: Compass, title: "Discovery", desc: "Curated resources from trusted sources" },
+              ].map((val, i) => (
+                <motion.div
+                  key={val.title}
+                  className="text-center"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={fadeUp}
+                  custom={i}
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                    <val.icon className="w-6 h-6 text-foreground" />
+                  </div>
+                  <h3 className="font-bold text-foreground mb-1">{val.title}</h3>
+                  <p className="text-sm text-muted-foreground">{val.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="container py-24">
+          <motion.div
+            className="relative bg-foreground rounded-3xl p-12 md:p-16 text-center overflow-hidden"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+          >
+            <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-primary/20 -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-[oklch(0.85_0.06_10_/_0.2)] translate-y-1/2 -translate-x-1/2" />
+            <div className="relative">
+              <h2 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-tight">
+                Ready to join the community?
+              </h2>
+              <p className="text-white/60 text-lg mb-8 max-w-md mx-auto font-light">
+                Start your journey with thousands of believers growing together in faith.
+              </p>
+              {isAuthenticated ? (
+                <Button size="lg" asChild className="rounded-xl px-8 h-12 bg-white text-foreground hover:bg-white/90 font-semibold">
+                  <Link href="/groups">Find Your Group</Link>
+                </Button>
+              ) : (
+                <Button size="lg" asChild className="rounded-xl px-8 h-12 bg-white text-foreground hover:bg-white/90 font-semibold">
+                  <a href={getLoginUrl()}>Sign Up Free</a>
+                </Button>
+              )}
+            </div>
+          </motion.div>
+        </section>
+
+        {/* Footer */}
+        <footer className="border-t border-border/50 bg-white">
+          <div className="container py-10">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
+                  <span className="text-primary-foreground font-bold text-xs">m</span>
+                </div>
+                <span className="font-bold text-lg tracking-tight">mannuh</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                A community for believers, by believers.
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </Layout>
   );
 }
