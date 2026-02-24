@@ -1,10 +1,13 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Users, Play, Compass, ArrowRight, Heart, BookOpen, ChevronRight } from "lucide-react";
+import { Users, Play, Compass, ArrowRight, Heart, BookOpen, ChevronRight, ExternalLink, Headphones } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
+import { trpc } from "@/lib/trpc";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -17,6 +20,33 @@ const fadeUp = {
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+
+  // Fetch featured discover content (5 items)
+  const featuredContentQuery = trpc.discover.content.useQuery({
+    limit: 5,
+  });
+
+  const featuredContent = featuredContentQuery.data || [];
+
+  // Placeholder podcast episodes for homepage (2 most recent)
+  const recentPodcasts = [
+    {
+      id: 1,
+      title: "Finding Faith in Everyday Moments",
+      description: "Exploring how we can discover God's presence in our daily routines.",
+      thumbnailUrl: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400&h=400&fit=crop",
+      duration: "32:15",
+      publishedAt: "2026-02-23",
+    },
+    {
+      id: 2,
+      title: "The Power of Community in Faith",
+      description: "Discussion on how Christian community strengthens our walk with God.",
+      thumbnailUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=400&h=400&fit=crop",
+      duration: "28:42",
+      publishedAt: "2026-02-16",
+    },
+  ];
 
   return (
     <Layout>
@@ -150,6 +180,198 @@ export default function Home() {
                 </Link>
               </motion.div>
             ))}
+          </div>
+        </section>
+
+        {/* Featured Discover Content Section */}
+        {featuredContent.length > 0 && (
+          <section className="container pb-28">
+            <motion.div
+              className="mb-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={0}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-2">
+                    Featured Content
+                  </h2>
+                  <p className="text-muted-foreground font-light">
+                    Curated Christian stories and resources from trusted sources
+                  </p>
+                </div>
+                <Button variant="outline" asChild className="rounded-xl bg-white hidden sm:flex">
+                  <Link href="/discover">
+                    View All <ChevronRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {featuredContent.map((item, i) => {
+                let itemTags: string[] = [];
+                try {
+                  itemTags = item.tags ? JSON.parse(item.tags) : [];
+                } catch {}
+
+                return (
+                  <motion.div
+                    key={item.id}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeUp}
+                    custom={i}
+                  >
+                    <a
+                      href={item.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block"
+                    >
+                      <Card className="hover:shadow-md transition-all cursor-pointer group h-full">
+                        <CardContent className="p-4">
+                          {item.imageUrl && (
+                            <div className="aspect-video rounded-lg overflow-hidden mb-3 bg-muted">
+                              <img
+                                src={item.imageUrl}
+                                alt={item.title}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          {item.category && (
+                            <Badge variant="secondary" className="text-xs capitalize mb-2">
+                              {item.category.replace("-", " ")}
+                            </Badge>
+                          )}
+                          <h3 className="font-bold text-sm text-foreground line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+                            {item.title}
+                          </h3>
+                          {item.description && (
+                            <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                              {item.description}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between">
+                            {item.sourceName && (
+                              <span className="text-[10px] text-muted-foreground">
+                                {item.sourceName}
+                              </span>
+                            )}
+                            <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </a>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="text-center mt-6 sm:hidden">
+              <Button variant="outline" asChild className="rounded-xl bg-white">
+                <Link href="/discover">
+                  View All Content <ChevronRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            </div>
+          </section>
+        )}
+
+        {/* The Wordly Series Podcast Section */}
+        <section className="bg-white border-y border-border/50">
+          <div className="container py-24">
+            <motion.div
+              className="mb-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={0}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wide uppercase mb-3">
+                    <Headphones className="w-3 h-3" />
+                    Weekly Podcast
+                  </span>
+                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-2">
+                    The Wordly Series
+                  </h2>
+                  <p className="text-muted-foreground font-light">
+                    Weekly conversations about faith, life, and walking with God
+                  </p>
+                </div>
+                <Button variant="outline" asChild className="rounded-xl bg-white hidden sm:flex">
+                  <Link href="/wordly-series">
+                    More Episodes <ChevronRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {recentPodcasts.map((episode, i) => (
+                <motion.div
+                  key={episode.id}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={fadeUp}
+                  custom={i + 1}
+                >
+                  <Link href="/wordly-series">
+                    <Card className="hover:shadow-md transition-all cursor-pointer group h-full">
+                      <CardContent className="p-0">
+                        <div className="flex gap-4 p-5">
+                          <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted relative">
+                            <img
+                              src={episode.thumbnailUrl}
+                              alt={episode.title}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Play className="w-6 h-6 text-white" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-foreground line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+                              {episode.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                              {episode.description}
+                            </p>
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                              <span>{episode.duration}</span>
+                              <span>•</span>
+                              <span>
+                                {new Date(episode.publishedAt).toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center mt-8">
+              <Button asChild className="rounded-xl px-8 h-12 font-semibold">
+                <Link href="/wordly-series">
+                  More Episodes <ArrowRight className="w-4 h-4 ml-2" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </section>
 
