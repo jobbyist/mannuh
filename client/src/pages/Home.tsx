@@ -216,7 +216,9 @@ export default function Home() {
                 let itemTags: string[] = [];
                 try {
                   itemTags = item.tags ? JSON.parse(item.tags) : [];
-                } catch {}
+                } catch (e) {
+                  console.warn('Failed to parse tags for item:', item.id, e);
+                }
 
                 return (
                   <motion.div

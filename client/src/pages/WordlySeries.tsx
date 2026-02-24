@@ -142,7 +142,17 @@ const AudioPlayer = ({ episode }: { episode: PodcastEpisode }) => {
   // Parse duration string (MM:SS) to total seconds
   const parseDuration = (duration: string): number => {
     const parts = duration.split(":");
-    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    if (parts.length !== 2) {
+      console.warn('Invalid duration format:', duration);
+      return 0;
+    }
+    const mins = parseInt(parts[0]);
+    const secs = parseInt(parts[1]);
+    if (isNaN(mins) || isNaN(secs)) {
+      console.warn('Invalid duration values:', duration);
+      return 0;
+    }
+    return mins * 60 + secs;
   };
 
   // Format seconds to MM:SS
