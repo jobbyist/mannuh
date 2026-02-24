@@ -139,6 +139,30 @@ const AudioPlayer = ({ episode }: { episode: PodcastEpisode }) => {
   const [progress, setProgress] = useState(0);
   const [volume, setVolume] = useState(75);
 
+  // Parse duration string (MM:SS) to total seconds
+  const parseDuration = (duration: string): number => {
+    const parts = duration.split(":");
+    return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+  };
+
+  // Format seconds to MM:SS
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const totalSeconds = parseDuration(episode.duration);
+  const currentSeconds = (progress / 100) * totalSeconds;
+
+  const handleSkipBack = () => {
+    setProgress(Math.max(0, progress - 5));
+  };
+
+  const handleSkipForward = () => {
+    setProgress(Math.min(100, progress + 5));
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow">
       <CardContent className="p-0">
@@ -183,7 +207,7 @@ const AudioPlayer = ({ episode }: { episode: PodcastEpisode }) => {
                 className="cursor-pointer"
               />
               <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                <span>{Math.floor((progress / 100) * 32)}:00</span>
+                <span>{formatTime(currentSeconds)}</span>
                 <span>{episode.duration}</span>
               </div>
             </div>
@@ -195,7 +219,7 @@ const AudioPlayer = ({ episode }: { episode: PodcastEpisode }) => {
                   size="icon"
                   variant="ghost"
                   className="h-8 w-8"
-                  onClick={() => {}}
+                  onClick={handleSkipBack}
                 >
                   <SkipBack className="h-4 w-4" />
                 </Button>
@@ -215,7 +239,7 @@ const AudioPlayer = ({ episode }: { episode: PodcastEpisode }) => {
                   size="icon"
                   variant="ghost"
                   className="h-8 w-8"
-                  onClick={() => {}}
+                  onClick={handleSkipForward}
                 >
                   <SkipForward className="h-4 w-4" />
                 </Button>
