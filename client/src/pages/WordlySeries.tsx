@@ -211,6 +211,8 @@ const AudioPlayer = ({ episode }: { episode: PodcastEpisode }) => {
 
             {/* Progress Bar */}
             <div className="mb-4">
+              {/* Note: Manual seeking is enabled for demonstration. Once real audio URLs are added,
+                  this will work with actual audio playback synchronization. */}
               <Slider
                 value={[progress]}
                 onValueChange={(vals) => setProgress(vals[0])}
