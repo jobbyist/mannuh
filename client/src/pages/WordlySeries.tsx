@@ -156,11 +156,13 @@ const AudioPlayer = ({ episode }: { episode: PodcastEpisode }) => {
   const currentSeconds = (progress / 100) * totalSeconds;
 
   const handleSkipBack = () => {
-    setProgress(Math.max(0, progress - 5));
+    const skipPercentage = (5 / totalSeconds) * 100;
+    setProgress(Math.max(0, progress - skipPercentage));
   };
 
   const handleSkipForward = () => {
-    setProgress(Math.min(100, progress + 5));
+    const skipPercentage = (5 / totalSeconds) * 100;
+    setProgress(Math.min(100, progress + skipPercentage));
   };
 
   return (
