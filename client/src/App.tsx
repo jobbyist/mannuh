@@ -28,7 +28,7 @@ function Router() {
       <Route path="/profile/:id">{(params) => <Layout><Profile userId={Number(params.id)} /></Layout>}</Route>
       <Route path="/search" component={() => <Layout><Search /></Layout>} />
       <Route path="/notifications" component={() => <Layout><Notifications /></Layout>} />
-      <Route path="/wordly-series" component={() => <Layout><WordlySeries /></Layout>} />
+      <Route path="/wordly-series" component={WordlySeries} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
