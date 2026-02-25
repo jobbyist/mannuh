@@ -22,8 +22,18 @@ const socialLinks = [
 const quickLinks = [
   { label: "About Mannuh", href: "/about" },
   { label: "Cell Groups", href: "/groups" },
+  { label: "Reels", href: "/reels" },
+  { label: "Browse Content", href: "/browse" },
+  { label: "Discover Stories", href: "/discover" },
   { label: "Listen To Podcast", href: "/wordly-series" },
-  { label: "Stories & Articles", href: "/discover" },
+  { label: "Merchandise", href: "/merchandise" },
+  { label: "Pricing Plans", href: "/pricing" },
+];
+
+const communityLinks = [
+  { label: "Mannuh for Kids", href: "/kids" },
+  { label: "Founding Members", href: "/founding-members" },
+  { label: "Help Center", href: "/help" },
   { label: "Support A Cause", href: "/support" },
   { label: "Business Solutions", href: "/business" },
   { label: "Partner Program", href: "/partner" },
@@ -421,7 +431,7 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
               <ul className="space-y-2">
-                {quickLinks.slice(0, 4).map((link) => (
+                {quickLinks.map((link) => (
                   <li key={link.label}>
                     <Link href={link.href}>
                       <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
@@ -436,7 +446,7 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold text-foreground mb-4">Community</h3>
               <ul className="space-y-2">
-                {quickLinks.slice(4).map((link) => (
+                {communityLinks.map((link) => (
                   <li key={link.label}>
                     <Link href={link.href}>
                       <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
