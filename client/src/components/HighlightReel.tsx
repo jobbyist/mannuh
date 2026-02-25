@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface Story {
   id: number;
@@ -84,167 +85,122 @@ const sampleStories: Story[] = [
 ];
 
 export default function HighlightReel() {
+  const [selectedStory, setSelectedStory] = useState<number | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(true);
-
-  useEffect(() => {
-    if (!isPlaying) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % sampleStories.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [isPlaying]);
 
   const handlePrevious = () => {
     setCurrentIndex((prev) => (prev - 1 + sampleStories.length) % sampleStories.length);
-    setIsPlaying(false);
   };
 
   const handleNext = () => {
     setCurrentIndex((prev) => (prev + 1) % sampleStories.length);
-    setIsPlaying(false);
   };
 
-  const currentStory = sampleStories[currentIndex];
+  const currentStory = selectedStory !== null ? sampleStories.find(s => s.id === selectedStory) : null;
 
   return (
-    <div className="bg-gradient-to-b from-muted/50 to-background border-y border-border/50">
-      <div className="container py-8">
-        {/* Stories Thumbnails */}
-        <div className="flex items-center gap-4 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-          {sampleStories.map((story, index) => (
-            <button
-              key={story.id}
-              onClick={() => {
-                setCurrentIndex(index);
-                setIsPlaying(false);
-              }}
-              className="flex flex-col items-center gap-2 flex-shrink-0 group"
-            >
-              <div
-                className={`relative ${
-                  index === currentIndex
-                    ? "ring-4 ring-primary ring-offset-2"
-                    : "ring-2 ring-border hover:ring-primary/50"
-                } rounded-full p-1 transition-all`}
+    <>
+      <div className="bg-gradient-to-b from-muted/50 to-background border-y border-border/50">
+        <div className="container py-8">
+          {/* Stories Thumbnails Slider */}
+          <div className="flex items-center gap-4 overflow-x-auto pb-2 scrollbar-hide">
+            {sampleStories.map((story, index) => (
+              <button
+                key={story.id}
+                onClick={() => setSelectedStory(story.id)}
+                className="flex flex-col items-center gap-2 flex-shrink-0 group"
               >
-                <img
-                  src={story.avatarUrl}
-                  alt={story.username}
-                  className="w-16 h-16 rounded-full object-cover"
-                />
-                {index === currentIndex && (
-                  <div className="absolute inset-0 rounded-full bg-primary/20 animate-pulse" />
-                )}
-              </div>
-              <span className="text-xs font-medium text-foreground truncate w-16 text-center">
-                {story.username}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Main Story Display */}
-        <div className="relative max-w-md mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -50 }}
-              transition={{ duration: 0.3 }}
-              className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-muted shadow-2xl"
-            >
-              <img
-                src={currentStory.imageUrl}
-                alt={currentStory.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
-              
-              {/* Progress Bars */}
-              <div className="absolute top-4 left-4 right-4 flex gap-1">
-                {sampleStories.map((_, index) => (
-                  <div
-                    key={index}
-                    className="flex-1 h-1 bg-white/30 rounded-full overflow-hidden"
-                  >
-                    <div
-                      className={`h-full bg-white transition-all duration-300 ${
-                        index < currentIndex
-                          ? "w-full"
-                          : index === currentIndex
-                          ? "w-full animate-progress"
-                          : "w-0"
-                      }`}
+                <div className="relative p-1 rounded-full bg-gradient-to-tr from-[oklch(0.82_0.06_240)] via-[oklch(0.88_0.05_330)] to-[oklch(0.85_0.06_10)] hover:from-[oklch(0.75_0.08_240)] hover:via-[oklch(0.80_0.07_330)] hover:to-[oklch(0.75_0.08_10)] transition-all">
+                  <div className="bg-white rounded-full p-0.5">
+                    <img
+                      src={story.avatarUrl}
+                      alt={story.username}
+                      className="w-16 h-16 rounded-full object-cover"
                     />
                   </div>
-                ))}
-              </div>
-
-              {/* Story Header */}
-              <div className="absolute top-8 left-4 right-4 flex items-center gap-3 mt-4">
-                <img
-                  src={currentStory.avatarUrl}
-                  alt={currentStory.username}
-                  className="w-10 h-10 rounded-full border-2 border-white object-cover"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold text-sm">{currentStory.username}</p>
-                  <p className="text-white/80 text-xs">5m ago</p>
                 </div>
-              </div>
-
-              {/* Story Content */}
-              <div className="absolute bottom-8 left-4 right-4">
-                <h3 className="text-white text-2xl font-bold mb-2">{currentStory.title}</h3>
-                <p className="text-white/90 text-sm">
-                  Sharing my faith journey with the community 🙏
-                </p>
-              </div>
-
-              {/* Navigation Buttons */}
-              <button
-                onClick={handlePrevious}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
+                <span className="text-xs font-medium text-foreground truncate w-16 text-center">
+                  {story.username}
+                </span>
               </button>
-              <button
-                onClick={handleNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {/* Auto-play indicator */}
-        <div className="text-center mt-4">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {isPlaying ? "⏸ Pause" : "▶ Play"} Auto-Rotate
-          </button>
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Story Modal */}
+      <Dialog open={selectedStory !== null} onOpenChange={() => setSelectedStory(null)}>
+        <DialogContent className="max-w-md p-0 bg-transparent border-none">
+          {currentStory && (
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStory.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+                className="relative aspect-[9/16] rounded-2xl overflow-hidden bg-muted shadow-2xl"
+              >
+                <img
+                  src={currentStory.imageUrl}
+                  alt={currentStory.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
+                
+                {/* Close Button */}
+                <button
+                  onClick={() => setSelectedStory(null)}
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors z-10"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+
+                {/* Story Header */}
+                <div className="absolute top-4 left-4 right-16 flex items-center gap-3">
+                  <img
+                    src={currentStory.avatarUrl}
+                    alt={currentStory.username}
+                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-semibold text-sm">{currentStory.username}</p>
+                    <p className="text-white/80 text-xs">5m ago</p>
+                  </div>
+                </div>
+
+                {/* Story Content */}
+                <div className="absolute bottom-8 left-4 right-4">
+                  <h3 className="text-white text-2xl font-bold mb-2">{currentStory.title}</h3>
+                  <p className="text-white/90 text-sm">
+                    Sharing my faith journey with the community 🙏
+                  </p>
+                </div>
+
+                {/* Navigation Buttons */}
+                {sampleStories.length > 1 && (
+                  <>
+                    <button
+                      onClick={handlePrevious}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={handleNext}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <style>{`
-        @keyframes progress {
-          from {
-            width: 0%;
-          }
-          to {
-            width: 100%;
-          }
-        }
-        .animate-progress {
-          animation: progress 5s linear;
-        }
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
@@ -253,6 +209,6 @@ export default function HighlightReel() {
           scrollbar-width: none;
         }
       `}</style>
-    </div>
+    </>
   );
 }
