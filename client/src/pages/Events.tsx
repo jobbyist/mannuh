@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Clock, Users, Video, DollarSign, CheckCircle, Plus } from "lucide-react";
 import { motion } from "framer-motion";
-import Layout from "@/components/Layout";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { format } from "date-fns";
@@ -52,8 +51,7 @@ export default function Events() {
   };
 
   return (
-    <Layout>
-      <div className="container py-20">
+    <div className="container py-20">
         {/* Hero Section */}
         <motion.div
           className="max-w-3xl mx-auto text-center mb-16"
@@ -258,6 +256,6 @@ export default function Events() {
           </motion.div>
         )}
       </div>
-    </Layout>
+    </div>
   );
 }
