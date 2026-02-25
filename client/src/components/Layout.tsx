@@ -29,6 +29,9 @@ const navItems = [
 
 const moreNavItems = [
   { href: "/browse", label: "Browse Content", icon: BookOpen },
+  { href: "/pathways", label: "Guided Pathways", icon: BookOpen },
+  { href: "/events", label: "Events", icon: Award },
+  { href: "/churches", label: "Church Directory", icon: Users },
   { href: "/wordly-series", label: "Podcast", icon: Podcast },
   { href: "/merchandise", label: "Merchandise", icon: ShoppingBag },
   { href: "/pricing", label: "Pricing", icon: CreditCard },
