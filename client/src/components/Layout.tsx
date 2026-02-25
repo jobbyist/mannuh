@@ -21,24 +21,41 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import AIChatbot from "./AIChatbot";
 
-const navItems = [
-  { href: "/groups", labelKey: "nav.cellGroups", icon: Users },
-  { href: "/reels", labelKey: "nav.reels", icon: Play },
-  { href: "/discover", labelKey: "nav.discover", icon: Compass },
+type NavItem = {
+  href: string;
+  labelKey: string;
+  icon: any;
+  badge?: string;
+};
+
+// Navigation for non-authenticated users
+const guestNavItems: NavItem[] = [
+  { href: "/browse", labelKey: "nav.discoveryHub", icon: Compass },
+  { href: "/groups", labelKey: "nav.exploreCellGroups", icon: Users },
+  { href: "/pathways", labelKey: "nav.guidedPathways", icon: Award, badge: "Premium" },
+  { href: "/discover", labelKey: "nav.featuredStories", icon: BookOpen },
+  { href: "/kids", labelKey: "nav.mannuhForKids", icon: Baby },
+  { href: "/shop", labelKey: "nav.theMannuhShop", icon: ShoppingBag },
+  { href: "/support", labelKey: "nav.supportCenter", icon: HelpCircle },
 ];
 
-const moreNavItems = [
-  { href: "/browse", labelKey: "moreMenu.browseContent", icon: BookOpen },
-  { href: "/pathways", labelKey: "moreMenu.guidedPathways", icon: BookOpen },
-  { href: "/events", labelKey: "moreMenu.events", icon: Award },
-  { href: "/churches", labelKey: "moreMenu.churchDirectory", icon: Users },
-  { href: "/wordly-series", labelKey: "moreMenu.podcast", icon: Podcast },
-  { href: "/shop", labelKey: "moreMenu.shop", icon: ShoppingBag },
-  { href: "/merchandise", labelKey: "moreMenu.merchandise", icon: ShoppingBag },
-  { href: "/pricing", labelKey: "moreMenu.pricing", icon: CreditCard },
-  { href: "/kids", labelKey: "moreMenu.kids", icon: Baby },
-  { href: "/founding-members", labelKey: "moreMenu.foundingMembers", icon: Award },
-  { href: "/help", labelKey: "moreMenu.helpCenter", icon: HelpCircle },
+// Primary navigation for authenticated users
+const authPrimaryNavItems: NavItem[] = [
+  { href: "/", labelKey: "nav.home", icon: Home },
+  { href: "/groups", labelKey: "nav.cellGroups", icon: Users },
+  { href: "/reels", labelKey: "nav.featuredReels", icon: Play },
+  { href: "/discover", labelKey: "nav.storiesArticles", icon: BookOpen },
+  { href: "/pathways", labelKey: "nav.guidedPathwaysAuth", icon: Award },
+  { href: "/events", labelKey: "nav.upcomingEvents", icon: Award },
+  { href: "/churches", labelKey: "nav.churchDirectory", icon: Globe },
+  { href: "/kids", labelKey: "nav.mannuhForKids", icon: Baby },
+];
+
+// Secondary navigation for authenticated users
+const authSecondaryNavItems: NavItem[] = [
+  { href: "/merchandise", labelKey: "nav.shopMerchandise", icon: ShoppingBag },
+  { href: "/settings", labelKey: "nav.profileSettings", icon: Settings },
+  { href: "/support", labelKey: "nav.supportCenter", icon: HelpCircle },
 ];
 
 const languages = [
@@ -68,6 +85,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   });
   const unreadCount = (unreadQuery.data as number) ?? 0;
 
+  // Determine which navigation items to display
+  const displayNavItems = isAuthenticated ? authPrimaryNavItems : guestNavItems;
+  const displaySecondaryNavItems = isAuthenticated ? authSecondaryNavItems : [];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -80,46 +101,69 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </Link>
 
             {/* Desktop Nav */}
-            <div className="hidden md:flex items-center gap-1">
-              {navItems.map((item) => {
+            <div className="hidden md:flex items-center gap-1 overflow-x-auto">
+              {displayNavItems.slice(0, 5).map((item) => {
                 const Icon = item.icon;
                 const isActive = location === item.href;
                 return (
                   <Link key={item.href} href={item.href}>
-                    <button className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    <button className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                       isActive
                         ? "bg-primary/10 text-primary"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}>
                       <Icon className="w-4 h-4" />
                       {t(item.labelKey)}
+                      {item.badge && (
+                        <Badge variant="secondary" className="ml-1 text-xs px-1.5 py-0">
+                          {item.badge}
+                        </Badge>
+                      )}
                     </button>
                   </Link>
                 );
               })}
               
-              {/* More menu dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-                    <MoreHorizontal className="w-4 h-4" />
-                    {t("nav.more")}
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-52">
-                  {moreNavItems.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <DropdownMenuItem key={item.href} asChild>
-                        <Link href={item.href} className="flex items-center gap-2">
-                          <Icon className="w-4 h-4" />
-                          {t(item.labelKey)}
-                        </Link>
-                      </DropdownMenuItem>
-                    );
-                  })}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              {/* More menu dropdown for remaining items */}
+              {displayNavItems.length > 5 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                      <MoreHorizontal className="w-4 h-4" />
+                      {t("nav.more")}
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-52">
+                    {displayNavItems.slice(5).map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <DropdownMenuItem key={item.href} asChild>
+                          <Link href={item.href} className="flex items-center gap-2">
+                            <Icon className="w-4 h-4" />
+                            {t(item.labelKey)}
+                          </Link>
+                        </DropdownMenuItem>
+                      );
+                    })}
+                    {displaySecondaryNavItems.length > 0 && (
+                      <>
+                        <DropdownMenuSeparator />
+                        {displaySecondaryNavItems.map((item) => {
+                          const Icon = item.icon;
+                          return (
+                            <DropdownMenuItem key={item.href} asChild>
+                              <Link href={item.href} className="flex items-center gap-2">
+                                <Icon className="w-4 h-4" />
+                                {t(item.labelKey)}
+                              </Link>
+                            </DropdownMenuItem>
+                          );
+                        })}
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
 
             {/* Right side */}
@@ -198,9 +242,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <Button size="sm" asChild>
-                  <a href={getLoginUrl()}>{t("nav.signIn")}</a>
-                </Button>
+                <a href={getLoginUrl()}>
+                  <button className="relative px-6 py-2 rounded-lg text-sm font-bold text-foreground bg-transparent border-2 border-transparent transition-all duration-300 hover:shadow-lg hover:shadow-primary/30" style={{
+                    backgroundImage: 'linear-gradient(white, white), linear-gradient(135deg, oklch(0.82 0.06 240), oklch(0.88 0.05 330))',
+                    backgroundOrigin: 'border-box',
+                    backgroundClip: 'padding-box, border-box',
+                  }}>
+                    {t("nav.signUpLogin")}
+                  </button>
+                </a>
               )}
 
               {/* Mobile menu toggle */}
@@ -217,7 +267,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {mobileMenuOpen && (
             <div className="md:hidden pb-4 border-t border-border/50 pt-3">
               <div className="flex flex-col gap-1">
-                {navItems.map((item) => {
+                {displayNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location === item.href;
                   return (
@@ -229,31 +279,38 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       }`}>
                         <Icon className="w-4 h-4" />
                         {t(item.labelKey)}
+                        {item.badge && (
+                          <Badge variant="secondary" className="ml-auto text-xs px-1.5 py-0">
+                            {item.badge}
+                          </Badge>
+                        )}
                       </button>
                     </Link>
                   );
                 })}
                 
-                {/* Divider */}
-                <div className="border-t border-border/50 my-2"></div>
-                
-                {/* More items in mobile */}
-                {moreNavItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = location === item.href;
-                  return (
-                    <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
-                      <button className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        isActive
-                          ? "bg-primary/10 text-primary"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                      }`}>
-                        <Icon className="w-4 h-4" />
-                        {t(item.labelKey)}
-                      </button>
-                    </Link>
-                  );
-                })}
+                {/* Secondary items in mobile */}
+                {displaySecondaryNavItems.length > 0 && (
+                  <>
+                    <div className="border-t border-border/50 my-2"></div>
+                    {displaySecondaryNavItems.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = location === item.href;
+                      return (
+                        <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
+                          <button className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                            isActive
+                              ? "bg-primary/10 text-primary"
+                              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                          }`}>
+                            <Icon className="w-4 h-4" />
+                            {t(item.labelKey)}
+                          </button>
+                        </Link>
+                      );
+                    })}
+                  </>
+                )}
               </div>
             </div>
           )}
