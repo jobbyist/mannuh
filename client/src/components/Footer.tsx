@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import {
   Instagram, Twitter, Facebook, Music, Youtube, MessageCircle,
   Mail, Apple, Chrome, CreditCard
@@ -19,564 +20,613 @@ const socialLinks = [
   { icon: Chrome, href: "https://www.google.com/", label: "Google" },
 ];
 
-const quickLinks = [
-  { label: "About Mannuh", href: "/about" },
-  { label: "Cell Groups", href: "/groups" },
-  { label: "Reels", href: "/reels" },
-  { label: "Browse Content", href: "/browse" },
-  { label: "Discover Stories", href: "/discover" },
-  { label: "Guided Pathways", href: "/pathways" },
-  { label: "Events", href: "/events" },
-  { label: "Church Directory", href: "/churches" },
-  { label: "Listen To Podcast", href: "/wordly-series" },
-  { label: "Merchandise", href: "/merchandise" },
-  { label: "Pricing Plans", href: "/pricing" },
+const aboutLinks = [
+  { labelKey: "footer.companyProfile", href: "/about" },
+  { labelKey: "footer.foundingMembers", href: "/founding-members" },
+  { labelKey: "footer.advertise", href: "/ads" },
+  { labelKey: "footer.supportCause", href: "/support" },
+  { labelKey: "footer.businessSolutions", href: "/business" },
+  { labelKey: "footer.partnerProgram", href: "/partner" },
+  { labelKey: "footer.donate", href: "/donate" },
+  { labelKey: "footer.helpCenter", href: "/help" },
 ];
 
-const communityLinks = [
-  { label: "Mannuh for Kids", href: "/kids" },
-  { label: "Founding Members", href: "/founding-members" },
-  { label: "Help Center", href: "/help" },
-  { label: "Advertise With Us", href: "/ads" },
-  { label: "Support A Cause", href: "/support" },
-  { label: "Business Solutions", href: "/business" },
-  { label: "Partner Program", href: "/partner" },
-  { label: "Donate/Support", href: "/donate" },
+const exploreLinks = [
+  { labelKey: "footer.createJoinGroups", href: "/groups" },
+  { labelKey: "footer.featuredArticles", href: "/discover" },
+  { labelKey: "footer.guidedPathways", href: "/pathways" },
+  { labelKey: "footer.discoverEvents", href: "/events" },
+  { labelKey: "footer.wordlyPodcast", href: "/wordly-series" },
+  { labelKey: "footer.churchDirectory", href: "/churches" },
+  { labelKey: "footer.pricingPlans", href: "/pricing" },
+  { labelKey: "footer.mannuhStore", href: "/shop" },
+];
+
+const quickLinks = [
+  { labelKey: "footer.termsOfUse", href: "#", onClick: "terms" },
+  { labelKey: "footer.privacyPolicy", href: "#", onClick: "privacy" },
+  { labelKey: "footer.cookiePolicy", href: "#", onClick: "cookies" },
+  { labelKey: "footer.refundPolicy", href: "#", onClick: "refunds" },
+  { labelKey: "footer.community", href: "#", onClick: "guidelines" },
+  { labelKey: "footer.contactUs", href: "#", onClick: "contact" },
 ];
 
 const legalPolicies = {
   terms: {
     title: "Terms of Service",
-    content: `
-# Terms of Service
-
-**Last Updated:** February 24, 2026
-
-## 1. Acceptance of Terms
-
-By accessing and using mannuh ("the Platform"), you accept and agree to be bound by the terms and provisions of this agreement.
-
-## 2. Use License
-
-Permission is granted to temporarily access the Platform for personal, non-commercial use only. This is the grant of a license, not a transfer of title.
-
-## 3. User Accounts
-
-- You must be at least 13 years old to use this Platform
-- You are responsible for maintaining the confidentiality of your account
-- You are responsible for all activities that occur under your account
-
-## 4. Content Guidelines
-
-All content shared on mannuh must:
-- Align with Christian values and principles
-- Be respectful and edifying
-- Not contain hate speech, profanity, or inappropriate material
-- Respect intellectual property rights
-
-## 5. Creator Partner Program
-
-Premium subscribers can enable Creator Mode to:
-- Post reels, articles, and stories
-- Earn ad revenue sharing
-- Access creator analytics
-
-10% of all proceeds are donated to charitable causes as outlined in our Whitepaper.
-
-## 6. Subscription Plans
-
-### Freemium ($0/month)
-- Limited access to content and features
-
-### Premium ($9.99/month)
-- Full access to all features
-- Creator privileges enabled
-
-### Enterprise (Custom pricing)
-- For churches and organizations
-- Custom solutions and support
-
-## 7. Termination
-
-We reserve the right to terminate or suspend access to our service immediately, without prior notice, for conduct that we believe violates these Terms.
-
-## 8. Disclaimers
-
-The Platform is provided on an "AS IS" and "AS AVAILABLE" basis without any warranties of any kind.
-
-## 9. Limitation of Liability
-
-mannuh and its affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages.
-
-## 10. Governing Law
-
-These Terms shall be governed by and construed in accordance with applicable laws.
-
-## 11. Contact
-
-For questions about these Terms, contact us at: support@mannuh.space
-
----
-
-**A Gravitas Industries Initiative. All Rights Reserved.**
-    `
+    content: (
+      <>
+        <p className="text-xs text-muted-foreground mb-4"><strong>Last Updated:</strong> February 24, 2026</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">1. Acceptance of Terms</h3>
+        <p className="mb-4">By accessing and using mannuh ("the Platform"), you accept and agree to be bound by the terms and provisions of this agreement.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">2. Use License</h3>
+        <p className="mb-4">Permission is granted to temporarily access the Platform for personal, non-commercial use only. This is the grant of a license, not a transfer of title.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">3. User Accounts</h3>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>You must be at least 13 years old to use this Platform</li>
+          <li>You are responsible for maintaining the confidentiality of your account</li>
+          <li>You are responsible for all activities that occur under your account</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">4. Content Guidelines</h3>
+        <p className="mb-2">All content shared on mannuh must:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Align with Christian values and principles</li>
+          <li>Be respectful and edifying</li>
+          <li>Not contain hate speech, profanity, or inappropriate material</li>
+          <li>Respect intellectual property rights</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">5. Creator Partner Program</h3>
+        <p className="mb-2">Premium subscribers can enable Creator Mode to:</p>
+        <ul className="list-disc list-inside mb-2 space-y-1">
+          <li>Post reels, articles, and stories</li>
+          <li>Earn ad revenue sharing</li>
+          <li>Access creator analytics</li>
+        </ul>
+        <p className="mb-4">10% of all proceeds are donated to charitable causes as outlined in our Whitepaper.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">6. Subscription Plans</h3>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Freemium ($0/month)</h4>
+        <p className="mb-3">Limited access to content and features</p>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Premium ($9.99/month)</h4>
+        <ul className="list-disc list-inside mb-3 space-y-1">
+          <li>Full access to all features</li>
+          <li>Creator privileges enabled</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Enterprise (Custom pricing)</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>For churches and organizations</li>
+          <li>Custom solutions and support</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">7. Termination</h3>
+        <p className="mb-4">We reserve the right to terminate or suspend access to our service immediately, without prior notice, for conduct that we believe violates these Terms.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">8. Disclaimers</h3>
+        <p className="mb-4">The Platform is provided on an "AS IS" and "AS AVAILABLE" basis without any warranties of any kind.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">9. Limitation of Liability</h3>
+        <p className="mb-4">mannuh and its affiliates shall not be liable for any indirect, incidental, special, consequential, or punitive damages.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">10. Governing Law</h3>
+        <p className="mb-4">These Terms shall be governed by and construed in accordance with applicable laws.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">11. Contact</h3>
+        <p className="mb-4">For questions about these Terms, contact us at: support@mannuh.space</p>
+        
+        <hr className="my-4" />
+        <p className="text-xs text-muted-foreground text-center"><strong>A Gravitas Industries Initiative. All Rights Reserved.</strong></p>
+      </>
+    )
   },
   privacy: {
     title: "Privacy Policy",
-    content: `
-# Privacy Policy
-
-**Last Updated:** February 24, 2026
-
-## 1. Information We Collect
-
-We collect information you provide directly to us when you:
-- Create an account
-- Use our services
-- Communicate with us
-- Participate in community activities
-
-### Personal Information
-- Name and email address
-- Profile information (bio, interests, church affiliation)
-- @username for community participation
-- Payment information (processed securely through third-party providers)
-
-### Usage Information
-- Device information
-- Log data
-- Location information (with permission)
-- Cookies and similar technologies
-
-## 2. How We Use Your Information
-
-We use the information we collect to:
-- Provide, maintain, and improve our services
-- Process transactions and send notifications
-- Respond to your comments and questions
-- Send marketing communications (with your consent)
-- Monitor and analyze trends, usage, and activities
-- Detect and prevent fraud and abuse
-
-## 3. Information Sharing
-
-We do not sell your personal information. We may share information:
-- With your consent
-- With service providers
-- For legal reasons
-- In connection with business transfers
-
-## 4. Your Rights
-
-You have the right to:
-- Access your personal information
-- Correct inaccurate information
-- Delete your account and data
-- Opt-out of marketing communications
-- Control cookie preferences
-
-## 5. Data Security
-
-We implement appropriate security measures to protect your information, but no method of transmission over the internet is 100% secure.
-
-## 6. Children's Privacy
-
-Our Platform is not directed to children under 13. We do not knowingly collect information from children under 13.
-
-## 7. International Data Transfers
-
-Your information may be transferred to and processed in countries other than your own.
-
-## 8. Changes to Privacy Policy
-
-We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy.
-
-## 9. Contact Us
-
-For privacy-related questions: support@mannuh.space
-
----
-
-**A Gravitas Industries Initiative. All Rights Reserved.**
-    `
+    content: (
+      <>
+        <p className="text-xs text-muted-foreground mb-4"><strong>Last Updated:</strong> February 24, 2026</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">1. Information We Collect</h3>
+        <p className="mb-2">We collect information you provide directly to us when you:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Create an account</li>
+          <li>Use our services</li>
+          <li>Communicate with us</li>
+          <li>Participate in community activities</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Personal Information</h4>
+        <ul className="list-disc list-inside mb-3 space-y-1">
+          <li>Name and email address</li>
+          <li>Profile information (bio, interests, church affiliation)</li>
+          <li>@username for community participation</li>
+          <li>Payment information (processed securely through third-party providers)</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Usage Information</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Device information</li>
+          <li>Log data</li>
+          <li>Location information (with permission)</li>
+          <li>Cookies and similar technologies</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">2. How We Use Your Information</h3>
+        <p className="mb-2">We use the information we collect to:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Provide, maintain, and improve our services</li>
+          <li>Process transactions and send notifications</li>
+          <li>Respond to your comments and questions</li>
+          <li>Send marketing communications (with your consent)</li>
+          <li>Monitor and analyze trends, usage, and activities</li>
+          <li>Detect and prevent fraud and abuse</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">3. Information Sharing</h3>
+        <p className="mb-2">We do not sell your personal information. We may share information:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>With your consent</li>
+          <li>With service providers</li>
+          <li>For legal reasons</li>
+          <li>In connection with business transfers</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">4. Your Rights</h3>
+        <p className="mb-2">You have the right to:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Access your personal information</li>
+          <li>Correct inaccurate information</li>
+          <li>Delete your account and data</li>
+          <li>Opt-out of marketing communications</li>
+          <li>Control cookie preferences</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">5. Data Security</h3>
+        <p className="mb-4">We implement appropriate security measures to protect your information, but no method of transmission over the internet is 100% secure.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">6. Children's Privacy</h3>
+        <p className="mb-4">Our Platform is not directed to children under 13. We do not knowingly collect information from children under 13.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">7. International Data Transfers</h3>
+        <p className="mb-4">Your information may be transferred to and processed in countries other than your own.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">8. Changes to Privacy Policy</h3>
+        <p className="mb-4">We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new policy.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">9. Contact Us</h3>
+        <p className="mb-4">For privacy-related questions: support@mannuh.space</p>
+        
+        <hr className="my-4" />
+        <p className="text-xs text-muted-foreground text-center"><strong>A Gravitas Industries Initiative. All Rights Reserved.</strong></p>
+      </>
+    )
   },
   cookies: {
     title: "Cookie Policy",
-    content: `
-# Cookie Policy
-
-**Last Updated:** February 24, 2026
-
-## What Are Cookies?
-
-Cookies are small text files stored on your device when you visit our Platform. They help us provide you with a better experience.
-
-## Types of Cookies We Use
-
-### Essential Cookies
-Required for the Platform to function properly:
-- Authentication cookies
-- Security cookies
-- Load balancing cookies
-
-### Analytics Cookies
-Help us understand how visitors use our Platform:
-- Google Analytics
-- Usage patterns
-- Performance metrics
-
-### Functionality Cookies
-Remember your preferences:
-- Language preference
-- Theme selection (light/dark mode)
-- Cookie consent choices
-
-### Marketing Cookies
-Used to deliver relevant advertisements:
-- Social media integration
-- Ad targeting
-- Conversion tracking
-
-## Managing Cookies
-
-You can control cookies through:
-- Your browser settings
-- Our cookie preference center
-- Opt-out tools provided by third parties
-
-Disabling cookies may affect Platform functionality.
-
-## Third-Party Cookies
-
-Some cookies are placed by third-party services that appear on our pages:
-- Social media platforms
-- Analytics providers
-- Advertising partners
-
-## Cookie Duration
-
-- Session cookies: Deleted when you close your browser
-- Persistent cookies: Remain until expiration or deletion
-
-## Updates to Cookie Policy
-
-We may update this policy to reflect changes in our practices or legal requirements.
-
-## Contact
-
-Questions about cookies: support@mannuh.space
-
----
-
-**A Gravitas Industries Initiative. All Rights Reserved.**
-    `
+    content: (
+      <>
+        <p className="text-xs text-muted-foreground mb-4"><strong>Last Updated:</strong> February 24, 2026</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">What Are Cookies?</h3>
+        <p className="mb-4">Cookies are small text files stored on your device when you visit our Platform. They help us provide you with a better experience.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Types of Cookies We Use</h3>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Essential Cookies</h4>
+        <p className="mb-2">Required for the Platform to function properly:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Authentication cookies</li>
+          <li>Security cookies</li>
+          <li>Load balancing cookies</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Analytics Cookies</h4>
+        <p className="mb-2">Help us understand how visitors use our Platform:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Google Analytics</li>
+          <li>Usage patterns</li>
+          <li>Performance metrics</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Functionality Cookies</h4>
+        <p className="mb-2">Remember your preferences:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Language preference</li>
+          <li>Theme selection (light/dark mode)</li>
+          <li>Cookie consent choices</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Marketing Cookies</h4>
+        <p className="mb-2">Used to deliver relevant advertisements:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Social media integration</li>
+          <li>Ad targeting</li>
+          <li>Conversion tracking</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Managing Cookies</h3>
+        <p className="mb-2">You can control cookies through:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Your browser settings</li>
+          <li>Our cookie preference center</li>
+          <li>Opt-out tools provided by third parties</li>
+        </ul>
+        <p className="mb-4">Disabling cookies may affect Platform functionality.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Third-Party Cookies</h3>
+        <p className="mb-2">Some cookies are placed by third-party services that appear on our pages:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Social media platforms</li>
+          <li>Analytics providers</li>
+          <li>Advertising partners</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Cookie Duration</h3>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Session cookies: Deleted when you close your browser</li>
+          <li>Persistent cookies: Remain until expiration or deletion</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Updates to Cookie Policy</h3>
+        <p className="mb-4">We may update this policy to reflect changes in our practices or legal requirements.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Contact</h3>
+        <p className="mb-4">Questions about cookies: support@mannuh.space</p>
+        
+        <hr className="my-4" />
+        <p className="text-xs text-muted-foreground text-center"><strong>A Gravitas Industries Initiative. All Rights Reserved.</strong></p>
+      </>
+    )
   },
   refunds: {
     title: "Refund Policy",
-    content: `
-# Refund Policy
-
-**Last Updated:** February 24, 2026
-
-## Subscription Refunds
-
-### Premium Plan ($9.99/month)
-- Monthly subscriptions: Refund available within 7 days of initial charge
-- Subsequent months: No refunds for partial month usage
-- Cancellation: Cancel anytime; access continues until end of billing period
-
-### Annual Plans (if applicable)
-- Refund available within 14 days of purchase
-- Pro-rated refunds not available after 14-day period
-
-## Donations
-
-### One-Time Donations
-- Donations are non-refundable unless made in error
-- Contact us within 48 hours for error-related refund requests
-- 10% of proceeds go to charitable causes as stated
-
-## Enterprise Solutions
-
-Custom refund terms based on service agreement.
-
-## Requesting a Refund
-
-To request a refund:
-1. Email support@mannuh.space
-2. Include your account email and reason
-3. Allow 5-7 business days for processing
-
-Approved refunds will be issued to the original payment method within 10-14 business days.
-
-## Creator Earnings
-
-Creator Partner Program earnings are non-refundable once paid out.
-
-## Exceptions
-
-Refunds may be denied if:
-- Account violated Terms of Service
-- Evidence of abuse or fraud
-- Beyond refund eligibility period
-
-## Changes to Refund Policy
-
-We reserve the right to modify this policy at any time.
-
-## Contact
-
-Refund inquiries: support@mannuh.space
-
----
-
-**A Gravitas Industries Initiative. All Rights Reserved.**
-    `
+    content: (
+      <>
+        <p className="text-xs text-muted-foreground mb-4"><strong>Last Updated:</strong> February 24, 2026</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Subscription Refunds</h3>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Premium Plan ($9.99/month)</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Monthly subscriptions: Refund available within 7 days of initial charge</li>
+          <li>Subsequent months: No refunds for partial month usage</li>
+          <li>Cancellation: Cancel anytime; access continues until end of billing period</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Annual Plans (if applicable)</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Refund available within 14 days of purchase</li>
+          <li>Pro-rated refunds not available after 14-day period</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Donations</h3>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">One-Time Donations</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Donations are non-refundable unless made in error</li>
+          <li>Contact us within 48 hours for error-related refund requests</li>
+          <li>10% of proceeds go to charitable causes as stated</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Enterprise Solutions</h3>
+        <p className="mb-4">Custom refund terms based on service agreement.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Requesting a Refund</h3>
+        <p className="mb-2">To request a refund:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Email support@mannuh.space</li>
+          <li>Include your account email and reason</li>
+          <li>Allow 5-7 business days for processing</li>
+        </ul>
+        <p className="mb-4">Approved refunds will be issued to the original payment method within 10-14 business days.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Creator Earnings</h3>
+        <p className="mb-4">Creator Partner Program earnings are non-refundable once paid out.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Exceptions</h3>
+        <p className="mb-2">Refunds may be denied if:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Account violated Terms of Service</li>
+          <li>Evidence of abuse or fraud</li>
+          <li>Beyond refund eligibility period</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Changes to Refund Policy</h3>
+        <p className="mb-4">We reserve the right to modify this policy at any time.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Contact</h3>
+        <p className="mb-4">Refund inquiries: support@mannuh.space</p>
+        
+        <hr className="my-4" />
+        <p className="text-xs text-muted-foreground text-center"><strong>A Gravitas Industries Initiative. All Rights Reserved.</strong></p>
+      </>
+    )
   },
   contact: {
     title: "Contact Us",
-    content: `
-# Contact Us
-
-We'd love to hear from you! Reach out with questions, feedback, or support requests.
-
-## Support Email
-**support@mannuh.space**
-
-For general inquiries, technical support, account issues, or feedback.
-
-## Response Time
-We aim to respond to all inquiries within 24-48 hours during business days.
-
-## Support Categories
-
-### Technical Support
-- Account access issues
-- Platform bugs
-- Feature requests
-
-### Billing & Subscriptions
-- Payment questions
-- Refund requests
-- Subscription management
-
-### Content & Moderation
-- Report inappropriate content
-- Appeal moderation decisions
-- Content guidelines questions
-
-### Partnership Inquiries
-- Creator Partner Program
-- Business Solutions
-- Sponsorship opportunities
-
-### Media & Press
-For media inquiries, please email with "MEDIA" in the subject line.
-
-## Mailing Address
-*(To be provided)*
-
-## Social Media
-- Instagram: @mannuh.space
-- Twitter/X: @mannuh.space
-- Facebook: /mannuh.space
-
-## Office Hours
-Monday - Friday: 9:00 AM - 5:00 PM (EST)
-
----
-
-**A Gravitas Industries Initiative. All Rights Reserved.**
-
-*mannuh is a faith-based community platform dedicated to connecting believers worldwide through cell groups, content creation, and shared fellowship.*
-    `
+    content: (
+      <>
+        <p className="mb-4">We'd love to hear from you! Reach out with questions, feedback, or support requests.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Support Email</h3>
+        <p className="mb-4"><strong>support@mannuh.space</strong></p>
+        <p className="mb-4">For general inquiries, technical support, account issues, or feedback.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Response Time</h3>
+        <p className="mb-4">We aim to respond to all inquiries within 24-48 hours during business days.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Support Categories</h3>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Technical Support</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Account access issues</li>
+          <li>Platform bugs</li>
+          <li>Feature requests</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Billing & Subscriptions</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Payment questions</li>
+          <li>Refund requests</li>
+          <li>Subscription management</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Content & Moderation</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Report inappropriate content</li>
+          <li>Appeal moderation decisions</li>
+          <li>Content guidelines questions</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Partnership Inquiries</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Creator Partner Program</li>
+          <li>Business Solutions</li>
+          <li>Sponsorship opportunities</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Media & Press</h4>
+        <p className="mb-4">For media inquiries, please email with "MEDIA" in the subject line.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Mailing Address</h3>
+        <p className="mb-4"><em>(To be provided)</em></p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Social Media</h3>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Instagram: @mannuh.space</li>
+          <li>Twitter/X: @mannuh.space</li>
+          <li>Facebook: /mannuh.space</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Office Hours</h3>
+        <p className="mb-4">Monday - Friday: 9:00 AM - 5:00 PM (EST)</p>
+        
+        <hr className="my-4" />
+        <p className="text-xs text-muted-foreground text-center"><strong>A Gravitas Industries Initiative. All Rights Reserved.</strong></p>
+        <p className="text-xs text-muted-foreground text-center mt-2"><em>mannuh is a faith-based community platform dedicated to connecting believers worldwide through cell groups, content creation, and shared fellowship.</em></p>
+      </>
+    )
   },
   guidelines: {
     title: "Community Guidelines",
-    content: `
-# Community Guidelines
-
-**Last Updated:** February 25, 2026
-
-Welcome to mannuh! Our community is built on faith, respect, and mutual support. These guidelines ensure that mannuh remains a safe, welcoming space for all believers to connect, share, and grow together.
-
-## Core Principles
-
-### 1. Faith-Centered Interaction
-- All interactions should reflect Christian values of love, kindness, and respect
-- Content should be edifying and encourage spiritual growth
-- Disagreements should be handled with grace and understanding
-
-### 2. Respectful Communication
-When interacting with other users, we expect:
-- **Respectful dialogue** - Treat others as you would like to be treated
-- **Constructive feedback** - Offer criticism in love and with the intent to help
-- **Active listening** - Seek to understand before being understood
-- **Encouragement** - Build up fellow believers in their faith journey
-
-### 3. Zero Tolerance Policy
-
-mannuh has **zero tolerance** for:
-
-#### Abusive Language or Behavior
-- Harassment, bullying, or intimidation of any kind
-- Hate speech, discrimination, or prejudice based on race, ethnicity, gender, age, disability, or any other protected characteristic
-- Threats of violence or harm
-- Sexual harassment or inappropriate advances
-- Personal attacks or defamatory statements
-
-**Consequences:** First offense may result in a warning. Repeated offenses will result in permanent account suspension.
-
-#### Unpleasant or Harmful Content
-- Explicit or graphic content (sexual, violent, or disturbing)
-- Content promoting self-harm or dangerous activities
-- Spam, phishing, or fraudulent content
-- Misinformation or deliberately false teachings
-- Content that glorifies sin or encourages unbiblical behavior
-
-**Consequences:** Immediate content removal. Repeated violations will result in account restrictions or termination.
-
-### 4. Content Creation & Sharing
-
-#### For All Users
-- Share content that aligns with Christian values and teachings
-- Verify facts before sharing information or teachings
-- Give proper attribution when sharing others' work
-- Report content that violates these guidelines
-
-#### For Creator Partners (Premium Subscribers)
-In addition to the above, creators must:
-
-##### Copyright & Intellectual Property
-**Strict compliance required:**
-
-- **Original Content Only** - Share only content you have created or have explicit rights to use
-- **No Unauthorized Distribution** - Do not upload, share, or distribute copyrighted or plagiarized content from other platforms without proper authorization
-- **Obtain Proper Consent** - Before sharing any third-party content (reels, images, videos, music, artwork, writings, etc.), you must obtain:
-  - **Written consent** (e.g., licensing agreement, email permission, signed contract)
-  - **Verbal consent** with documented proof (e.g., recorded conversation, witnessed agreement)
-  - **Other legally admissible consent** as required by applicable local, national, and international copyright laws
-
-##### What Requires Permission:
-- Video clips or reels from social media (Instagram, TikTok, YouTube, etc.)
-- Images or photographs taken by others
-- Music, sound recordings, or audio clips
-- Artwork, graphics, or designs
-- Written content (articles, quotes longer than fair use, books, etc.)
-- Any derivative works based on another's intellectual property
-
-##### Fair Use Exceptions:
-Limited use may be acceptable under fair use doctrine for:
-- Commentary or criticism with proper attribution
-- Educational purposes with limited excerpts
-- News reporting
-- Transformative works that add substantial new meaning
-
-**Note:** Fair use is determined on a case-by-case basis. When in doubt, obtain permission or create original content.
-
-##### Consequences for IP Violations:
-- **First Offense:** Content removal + 30-day creator privileges suspension + mandatory copyright training
-- **Second Offense:** Content removal + 90-day creator privileges suspension + final warning
-- **Third Offense:** Permanent removal from Creator Partner Program + possible account termination
-- **Legal Action:** IP owners may pursue legal remedies. mannuh will cooperate fully with copyright holders and legal authorities.
-
-### 5. Privacy & Safety
-- Protect your personal information
-- Do not share others' private information without consent
-- Report suspicious behavior or safety concerns immediately
-- Be cautious about meeting online contacts in person
-
-### 6. Platform Integrity
-- Do not create multiple accounts to circumvent bans or restrictions
-- Do not manipulate engagement metrics (fake likes, follows, comments)
-- Do not attempt to access others' accounts or system vulnerabilities
-- Do not use automation or bots to interact with the platform
-
-## Reporting Violations
-
-If you encounter content or behavior that violates these guidelines:
-
-1. **Report the content** - Use the report button on posts, comments, or profiles
-2. **Block the user** - If you feel unsafe or uncomfortable
-3. **Contact support** - For serious concerns: support@mannuh.space
-
-### What to Include in Reports:
-- Link to the content or profile
-- Description of the violation
-- Screenshots or evidence (if applicable)
-- Any relevant context
-
-We review all reports within 24-48 hours and take appropriate action.
-
-## Appeals Process
-
-If your content is removed or your account is restricted:
-
-1. **Review the decision** - Check the notification for specific violations
-2. **Submit an appeal** - Email support@mannuh.space with:
-   - Your account information
-   - The content in question
-   - Why you believe the decision should be reconsidered
-3. **Wait for response** - Appeals are typically reviewed within 5-7 business days
-
-## Content Moderation
-
-Our moderation team:
-- Reviews reported content and accounts
-- Makes decisions based on these guidelines
-- Applies consequences consistently and fairly
-- Continuously works to improve platform safety
-
-### Moderation Actions May Include:
-- Content removal
-- Warning notifications
-- Temporary account restrictions
-- Suspension of creator privileges
-- Permanent account termination
-
-## Supporting Resources
-
-### Need Help?
-- **Technical Support:** support@mannuh.space
-- **Report Abuse:** Report button on content or support@mannuh.space
-- **Mental Health Crisis:** Contact local emergency services or crisis helpline
-- **Legal Concerns:** legal@mannuh.space
-
-### Community Resources:
-- Help Center: mannuh.space/help
-- Creator Guidelines: mannuh.space/creator-guidelines
-- Copyright FAQ: mannuh.space/copyright
-- Safety Tips: mannuh.space/safety
-
-## Our Commitment
-
-mannuh is committed to:
-- **Safety** - Providing a secure environment for all users
-- **Integrity** - Enforcing guidelines consistently and transparently
-- **Growth** - Supporting spiritual development and community building
-- **Excellence** - Continuously improving our platform and policies
-
-## Updates to Guidelines
-
-We may update these guidelines periodically to address new challenges or improve clarity. Significant changes will be announced through:
-- Email notification to all users
-- In-app announcements
-- Posts on our social media channels
-
-Continued use of mannuh after changes constitutes acceptance of updated guidelines.
-
-## Final Note
-
-These guidelines exist to protect our community and honor God through our interactions. By using mannuh, you agree to uphold these standards and help create a positive, faith-filled environment for all.
-
-**Questions?** Contact us at support@mannuh.space
-
----
-
-**A Gravitas Industries Initiative. All Rights Reserved.**
-
-*"Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone." - Colossians 4:6*
-    `
+    content: (
+      <>
+        <p className="text-xs text-muted-foreground mb-4"><strong>Last Updated:</strong> February 25, 2026</p>
+        
+        <p className="mb-4">Welcome to mannuh! Our community is built on faith, respect, and mutual support. These guidelines ensure that mannuh remains a safe, welcoming space for all believers to connect, share, and grow together.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Core Principles</h3>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">1. Faith-Centered Interaction</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>All interactions should reflect Christian values of love, kindness, and respect</li>
+          <li>Content should be edifying and encourage spiritual growth</li>
+          <li>Disagreements should be handled with grace and understanding</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">2. Respectful Communication</h4>
+        <p className="mb-2">When interacting with other users, we expect:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li><strong>Respectful dialogue</strong> - Treat others as you would like to be treated</li>
+          <li><strong>Constructive feedback</strong> - Offer criticism in love and with the intent to help</li>
+          <li><strong>Active listening</strong> - Seek to understand before being understood</li>
+          <li><strong>Encouragement</strong> - Build up fellow believers in their faith journey</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">3. Zero Tolerance Policy</h4>
+        <p className="mb-4">mannuh has <strong>zero tolerance</strong> for:</p>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Abusive Language or Behavior</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Harassment, bullying, or intimidation of any kind</li>
+          <li>Hate speech, discrimination, or prejudice based on race, ethnicity, gender, age, disability, or any other protected characteristic</li>
+          <li>Threats of violence or harm</li>
+          <li>Sexual harassment or inappropriate advances</li>
+          <li>Personal attacks or defamatory statements</li>
+        </ul>
+        <p className="mb-4"><strong>Consequences:</strong> First offense may result in a warning. Repeated offenses will result in permanent account suspension.</p>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Unpleasant or Harmful Content</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Explicit or graphic content (sexual, violent, or disturbing)</li>
+          <li>Content promoting self-harm or dangerous activities</li>
+          <li>Spam, phishing, or fraudulent content</li>
+          <li>Misinformation or deliberately false teachings</li>
+          <li>Content that glorifies sin or encourages unbiblical behavior</li>
+        </ul>
+        <p className="mb-4"><strong>Consequences:</strong> Immediate content removal. Repeated violations will result in account restrictions or termination.</p>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">4. Content Creation & Sharing</h4>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">For All Users</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Share content that aligns with Christian values and teachings</li>
+          <li>Verify facts before sharing information or teachings</li>
+          <li>Give proper attribution when sharing others' work</li>
+          <li>Report content that violates these guidelines</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">For Creator Partners (Premium Subscribers)</h4>
+        <p className="mb-2">In addition to the above, creators must:</p>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Copyright & Intellectual Property</h4>
+        <p className="mb-2"><strong>Strict compliance required:</strong></p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li><strong>Original Content Only</strong> - Share only content you have created or have explicit rights to use</li>
+          <li><strong>No Unauthorized Distribution</strong> - Do not upload, share, or distribute copyrighted or plagiarized content from other platforms without proper authorization</li>
+          <li><strong>Obtain Proper Consent</strong> - Before sharing any third-party content (reels, images, videos, music, artwork, writings, etc.), you must obtain:
+            <ul className="list-disc list-inside ml-6 mt-1 space-y-1">
+              <li><strong>Written consent</strong> (e.g., licensing agreement, email permission, signed contract)</li>
+              <li><strong>Verbal consent</strong> with documented proof (e.g., recorded conversation, witnessed agreement)</li>
+              <li><strong>Other legally admissible consent</strong> as required by applicable local, national, and international copyright laws</li>
+            </ul>
+          </li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">What Requires Permission:</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Video clips or reels from social media (Instagram, TikTok, YouTube, etc.)</li>
+          <li>Images or photographs taken by others</li>
+          <li>Music, sound recordings, or audio clips</li>
+          <li>Artwork, graphics, or designs</li>
+          <li>Written content (articles, quotes longer than fair use, books, etc.)</li>
+          <li>Any derivative works based on another's intellectual property</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Fair Use Exceptions:</h4>
+        <p className="mb-2">Limited use may be acceptable under fair use doctrine for:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Commentary or criticism with proper attribution</li>
+          <li>Educational purposes with limited excerpts</li>
+          <li>News reporting</li>
+          <li>Transformative works that add substantial new meaning</li>
+        </ul>
+        <p className="mb-4"><strong>Note:</strong> Fair use is determined on a case-by-case basis. When in doubt, obtain permission or create original content.</p>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Consequences for IP Violations:</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li><strong>First Offense:</strong> Content removal + 30-day creator privileges suspension + mandatory copyright training</li>
+          <li><strong>Second Offense:</strong> Content removal + 90-day creator privileges suspension + final warning</li>
+          <li><strong>Third Offense:</strong> Permanent removal from Creator Partner Program + possible account termination</li>
+          <li><strong>Legal Action:</strong> IP owners may pursue legal remedies. mannuh will cooperate fully with copyright holders and legal authorities.</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">5. Privacy & Safety</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Protect your personal information</li>
+          <li>Do not share others' private information without consent</li>
+          <li>Report suspicious behavior or safety concerns immediately</li>
+          <li>Be cautious about meeting online contacts in person</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">6. Platform Integrity</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Do not create multiple accounts to circumvent bans or restrictions</li>
+          <li>Do not manipulate engagement metrics (fake likes, follows, comments)</li>
+          <li>Do not attempt to access others' accounts or system vulnerabilities</li>
+          <li>Do not use automation or bots to interact with the platform</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Reporting Violations</h3>
+        <p className="mb-2">If you encounter content or behavior that violates these guidelines:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li><strong>Report the content</strong> - Use the report button on posts, comments, or profiles</li>
+          <li><strong>Block the user</strong> - If you feel unsafe or uncomfortable</li>
+          <li><strong>Contact support</strong> - For serious concerns: support@mannuh.space</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">What to Include in Reports:</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Link to the content or profile</li>
+          <li>Description of the violation</li>
+          <li>Screenshots or evidence (if applicable)</li>
+          <li>Any relevant context</li>
+        </ul>
+        <p className="mb-4">We review all reports within 24-48 hours and take appropriate action.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Appeals Process</h3>
+        <p className="mb-2">If your content is removed or your account is restricted:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li><strong>Review the decision</strong> - Check the notification for specific violations</li>
+          <li><strong>Submit an appeal</strong> - Email support@mannuh.space with:
+            <ul className="list-disc list-inside ml-6 mt-1 space-y-1">
+              <li>Your account information</li>
+              <li>The content in question</li>
+              <li>Why you believe the decision should be reconsidered</li>
+            </ul>
+          </li>
+          <li><strong>Wait for response</strong> - Appeals are typically reviewed within 5-7 business days</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Content Moderation</h3>
+        <p className="mb-2">Our moderation team:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Reviews reported content and accounts</li>
+          <li>Makes decisions based on these guidelines</li>
+          <li>Applies consequences consistently and fairly</li>
+          <li>Continuously works to improve platform safety</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Moderation Actions May Include:</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Content removal</li>
+          <li>Warning notifications</li>
+          <li>Temporary account restrictions</li>
+          <li>Suspension of creator privileges</li>
+          <li>Permanent account termination</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Supporting Resources</h3>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1 mt-3">Need Help?</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li><strong>Technical Support:</strong> support@mannuh.space</li>
+          <li><strong>Report Abuse:</strong> Report button on content or support@mannuh.space</li>
+          <li><strong>Mental Health Crisis:</strong> Contact local emergency services or crisis helpline</li>
+          <li><strong>Legal Concerns:</strong> legal@mannuh.space</li>
+        </ul>
+        
+        <h4 className="text-base font-semibold text-foreground mb-1">Community Resources:</h4>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Help Center: mannuh.space/help</li>
+          <li>Creator Guidelines: mannuh.space/creator-guidelines</li>
+          <li>Copyright FAQ: mannuh.space/copyright</li>
+          <li>Safety Tips: mannuh.space/safety</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Our Commitment</h3>
+        <p className="mb-2">mannuh is committed to:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li><strong>Safety</strong> - Providing a secure environment for all users</li>
+          <li><strong>Integrity</strong> - Enforcing guidelines consistently and transparently</li>
+          <li><strong>Growth</strong> - Supporting spiritual development and community building</li>
+          <li><strong>Excellence</strong> - Continuously improving our platform and policies</li>
+        </ul>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Updates to Guidelines</h3>
+        <p className="mb-2">We may update these guidelines periodically to address new challenges or improve clarity. Significant changes will be announced through:</p>
+        <ul className="list-disc list-inside mb-4 space-y-1">
+          <li>Email notification to all users</li>
+          <li>In-app announcements</li>
+          <li>Posts on our social media channels</li>
+        </ul>
+        <p className="mb-4">Continued use of mannuh after changes constitutes acceptance of updated guidelines.</p>
+        
+        <h3 className="text-lg font-bold text-foreground mb-2">Final Note</h3>
+        <p className="mb-4">These guidelines exist to protect our community and honor God through our interactions. By using mannuh, you agree to uphold these standards and help create a positive, faith-filled environment for all.</p>
+        <p className="mb-4"><strong>Questions?</strong> Contact us at support@mannuh.space</p>
+        
+        <hr className="my-4" />
+        <p className="text-xs text-muted-foreground text-center"><strong>A Gravitas Industries Initiative. All Rights Reserved.</strong></p>
+        <p className="text-xs text-muted-foreground text-center mt-2"><em>"Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone." - Colossians 4:6</em></p>
+      </>
+    )
   }
 };
 
@@ -584,6 +634,7 @@ type LegalPolicy = keyof typeof legalPolicies;
 
 export default function Footer() {
   const [openPolicy, setOpenPolicy] = useState<LegalPolicy | null>(null);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -593,10 +644,10 @@ export default function Footer() {
             {/* Brand Section */}
             <div className="col-span-1">
               <div className="mb-4">
-                <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '250px', height: 'auto' }} />
+                <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '200px', height: 'auto' }} />
               </div>
               <p className="text-sm mb-4">
-                <strong>Premier Faith-Based Community Platform</strong>
+                <strong>{t("footer.premierPlatform")}</strong>
               </p>
               {/* Social Media Links */}
               <div className="flex flex-wrap gap-2">
@@ -615,89 +666,52 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Quick Links */}
+            {/* ABOUT */}
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
+              <h3 className="font-semibold text-foreground mb-4">{t("footer.about")}</h3>
+              <ul className="space-y-2">
+                {aboutLinks.map((link) => (
+                  <li key={link.labelKey}>
+                    <Link href={link.href}>
+                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                        {t(link.labelKey)}
+                      </a>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* EXPLORE */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-4">{t("footer.explore")}</h3>
+              <ul className="space-y-2">
+                {exploreLinks.map((link) => (
+                  <li key={link.labelKey}>
+                    <Link href={link.href}>
+                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                        {t(link.labelKey)}
+                      </a>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* QUICK LINKS */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-4">{t("footer.quickLinks")}</h3>
               <ul className="space-y-2">
                 {quickLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href}>
-                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                        {link.label}
-                      </a>
-                    </Link>
+                  <li key={link.labelKey}>
+                    <button
+                      onClick={() => setOpenPolicy(link.onClick as LegalPolicy)}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                    >
+                      {t(link.labelKey)}
+                    </button>
                   </li>
                 ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Community</h3>
-              <ul className="space-y-2">
-                {communityLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href}>
-                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                        {link.label}
-                      </a>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("terms")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Terms of Service
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("privacy")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Privacy Policy
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("cookies")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Cookie Policy
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("refunds")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Refund Policy
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("guidelines")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Community Guidelines
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("contact")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Contact Us
-                  </button>
-                </li>
               </ul>
             </div>
           </div>
@@ -747,7 +761,7 @@ export default function Footer() {
           {/* Payment Methods */}
           <div className="border-t border-border/50 pt-8 mb-8">
             <div className="flex flex-col items-center gap-4">
-              <p className="text-xs text-muted-foreground font-medium">Accepted Payment Methods</p>
+              <p className="text-xs text-muted-foreground font-medium">{t("footer.acceptedPayment")}</p>
               <div className="flex items-center gap-4 flex-wrap justify-center">
                 {/* Visa */}
                 <div className="h-8 px-3 bg-white border border-border/50 rounded flex items-center justify-center">
@@ -792,7 +806,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <div className="text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} mannuh. A Gravitas Industries Initiative. All Rights Reserved.</p>
+            <p>© {new Date().getFullYear()} {t("footer.copyright")}</p>
           </div>
         </div>
       </footer>
@@ -805,10 +819,8 @@ export default function Footer() {
               <DialogHeader>
                 <DialogTitle>{legalPolicies[openPolicy].title}</DialogTitle>
               </DialogHeader>
-              <div className="prose prose-sm max-w-none">
-                <div className="whitespace-pre-wrap text-sm text-muted-foreground">
-                  {legalPolicies[openPolicy].content}
-                </div>
+              <div className="prose prose-sm max-w-none text-muted-foreground">
+                {legalPolicies[openPolicy].content}
               </div>
               <div className="flex justify-end gap-2 mt-4">
                 <Button onClick={() => setOpenPolicy(null)}>Close</Button>
