@@ -8,7 +8,30 @@ const resources = {
     translation: {
       // Navigation
       nav: {
+        // Non-authenticated nav
+        discoveryHub: "Discovery Hub",
+        exploreCellGroups: "Explore Cell Groups",
+        guidedPathways: "Guided Pathways",
+        featuredStories: "Featured Stories",
+        mannuhForKids: "Mannuh for Kids",
+        theMannuhShop: "The Mannuh Shop",
+        supportCenter: "Support Center",
+        signUpLogin: "SIGN UP / LOGIN",
+        
+        // Authenticated nav - Primary
+        home: "Home",
         cellGroups: "Cell Groups",
+        featuredReels: "Featured Reels",
+        storiesArticles: "Stories & Articles",
+        guidedPathwaysAuth: "Guided Pathways",
+        upcomingEvents: "Upcoming Events",
+        churchDirectory: "Church Directory",
+        
+        // Authenticated nav - Secondary
+        shopMerchandise: "Shop Merchandise",
+        profileSettings: "Profile Settings",
+        
+        // Old keys for backward compatibility
         reels: "Reels",
         discover: "Discover",
         more: "More",
