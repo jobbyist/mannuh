@@ -53,10 +53,9 @@ const benefits = [
   }
 ];
 
-// Campaign details
-const CAMPAIGN_START = new Date("2025-12-01").getTime();
-const CAMPAIGN_DURATION_DAYS = 90;
-const CAMPAIGN_END = CAMPAIGN_START + (CAMPAIGN_DURATION_DAYS * 24 * 60 * 60 * 1000);
+// Campaign details - First Round (Pre-Launch to Early Phase)
+const CAMPAIGN_START = Date.now(); // Start countdown now
+const CAMPAIGN_END = new Date("2026-04-01T00:00:00").getTime(); // End on April 1, 2026
 const CURRENT_MEMBERS = 15;
 const GOAL_MEMBERS = 100;
 const GOAL_AMOUNT = 10000; // $10,000
@@ -112,8 +111,8 @@ export default function FoundingMembers() {
               Become a <span className="text-primary">Founding Member</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
-              Join an exclusive group of 100 founding members shaping the future of the mannuh platform. 
-              Support our equity-based crowdfunding campaign for the official public beta launch.
+              Join the first round of intake for the Pre-Launch to Early Phase of The mannuh Project's 
+              Equity-Based Crowdfunding Campaign. Limited to 100 founding members.
             </p>
             
             {/* Key Stats */}
@@ -173,7 +172,7 @@ export default function FoundingMembers() {
                   <div>
                     <h3 className="text-lg font-bold mb-1">Campaign Progress</h3>
                     <p className="text-sm text-muted-foreground">
-                      {CURRENT_MEMBERS} founding members joined since Dec 1, 2025
+                      First round of intake - Platform launches April 1, 2026
                     </p>
                   </div>
                   <div className="text-right">
@@ -258,10 +257,16 @@ export default function FoundingMembers() {
                     <Calendar className="w-4 h-4 text-primary" />
                     Launch Timeline
                   </h3>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    The first "public beta" version of the mannuh web-based platform is officially set to go live on 
+                    <strong> April 1st, 2026</strong>. This is the first round of intake for the Pre-Launch to Early Phase 
+                    of The mannuh Project's Equity-Based Crowdfunding Campaign.
+                  </p>
                   <p className="text-sm text-muted-foreground">
-                    The first "public beta" version of the mannuh platform is officially set to go live on 
-                    <strong> April 1st, 2026</strong>. This equity-based crowdfunding campaign supports the 
-                    ongoing development, launch, and growth of the platform.
+                    A second round of intake will support the pre-launch to early/soft launch phase of the native mobile 
+                    applications for Android and iOS, which will be shipped to the respective app stores during the 3rd and 
+                    4th quarters of 2026. For more details, refer to the Whitepaper by requesting access to the Founding 
+                    Members starter kit at <a href="https://www.gravitas.uno/mannuh" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.gravitas.uno/mannuh</a>.
                   </p>
                 </div>
 
@@ -270,10 +275,14 @@ export default function FoundingMembers() {
                     <DollarSign className="w-4 h-4 text-primary" />
                     Contribution Fee
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground mb-3">
                     <strong>$100 annual, non-refundable</strong> founder's contribution fee (subject to change). 
                     This fee supports the ongoing development, launch, and growth of the platform. Limited to 
-                    the first 100 members who join within the 90-day application window.
+                    the first 100 members who join before April 1st, 2026.
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    This campaign is managed by Gravitas Industries as the owner of the project. For more information, 
+                    visit <a href="https://www.gravitas.uno/mannuh" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.gravitas.uno/mannuh</a> or email <a href="mailto:mannuh@gravitas.uno" className="text-primary hover:underline">mannuh@gravitas.uno</a>.
                   </p>
                 </div>
 
@@ -383,6 +392,21 @@ export default function FoundingMembers() {
               </div>
 
               <div className="mt-12 p-6 bg-white/5 rounded-xl border border-white/10">
+                <p className="text-sm text-white/70 mb-4">
+                  <strong>Important Updates:</strong>
+                </p>
+                <p className="text-sm text-white/80 mb-4">
+                  The Gravitas management team will publish important updates regarding the status of the mannuh project, 
+                  revisions/changes to the Founder's Agreement or Product Roadmap Plan (if applicable), and announcements 
+                  about the second round of The mannuh Project's Equity-Based Crowdfunding Campaign.
+                </p>
+                <p className="text-sm text-white/80 mb-4">
+                  Check your email for updates or visit our support center at{" "}
+                  <a href="/support" className="text-white hover:underline font-semibold">www.mannuh.space/support-center</a>{" "}
+                  to check out the latest updates, important announcements and upcoming changes. You can also share your 
+                  feedback, participate in user experience polls/surveys and request features you'd like us to consider 
+                  implementing on the mannuh platform.
+                </p>
                 <p className="text-sm text-white/70 mb-2">
                   <strong>Contact Information:</strong>
                 </p>
@@ -404,6 +428,11 @@ export default function FoundingMembers() {
                     mannuh@gravitas.uno
                   </a>
                 </div>
+                <p className="text-xs text-white/60 mt-4">
+                  Access to confidential documentation (Whitepaper, Founding Members starter kit) may be granted subject 
+                  to completion of non-disclosure agreement and satisfaction of eligibility requirements reviewed by the 
+                  Gravitas in-house team.
+                </p>
               </div>
             </motion.div>
           </div>

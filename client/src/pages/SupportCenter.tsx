@@ -7,7 +7,7 @@ import Layout from "@/components/Layout";
 import Footer from "@/components/Footer";
 import { 
   HelpCircle, Rocket, Mail, MessageSquare, Sparkles, 
-  CheckCircle, Calendar, Send 
+  CheckCircle, Calendar, Send, Star, ThumbsUp, ThumbsDown
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -124,7 +124,7 @@ const faqs = [
   }
 ];
 
-export default function HelpCenter() {
+export default function SupportCenter() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -132,6 +132,15 @@ export default function HelpCenter() {
     message: ""
   });
   const [submitted, setSubmitted] = useState(false);
+  const [pollData, setPollData] = useState({
+    rating: 0,
+    features: {
+      toImprove: [] as string[],
+      toRemove: [] as string[],
+      toImplement: ""
+    }
+  });
+  const [pollSubmitted, setPollSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,6 +151,28 @@ export default function HelpCenter() {
       setSubmitted(false);
       setFormData({ name: "", email: "", subject: "", message: "" });
     }, 3000);
+  };
+
+  const handlePollSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In production, this would send to backend
+    console.log("Poll submitted:", pollData);
+    setPollSubmitted(true);
+    setTimeout(() => {
+      setPollSubmitted(false);
+    }, 3000);
+  };
+
+  const toggleFeature = (category: 'toImprove' | 'toRemove', feature: string) => {
+    setPollData(prev => ({
+      ...prev,
+      features: {
+        ...prev.features,
+        [category]: prev.features[category].includes(feature)
+          ? prev.features[category].filter(f => f !== feature)
+          : [...prev.features[category], feature]
+      }
+    }));
   };
 
   return (
@@ -159,7 +190,7 @@ export default function HelpCenter() {
               Help & Support
             </Badge>
             <h1 className="text-4xl md:text-6xl font-black tracking-tight text-foreground mb-6">
-              <span className="text-primary">Help</span> Center
+              <span className="text-primary">Support</span> Center
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
               Everything you need to know about mannuh - from getting started to advanced features
@@ -297,6 +328,164 @@ export default function HelpCenter() {
               </div>
             </motion.div>
           </div>
+        </section>
+
+        {/* User Experience Poll */}
+        <section className="container py-16">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            custom={0}
+            className="max-w-3xl mx-auto"
+          >
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Star className="w-5 h-5 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground">Rate Your Experience</h2>
+            </div>
+            
+            <Card>
+              <CardContent className="p-8">
+                {pollSubmitted ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                      <CheckCircle className="w-8 h-8 text-green-600" />
+                    </div>
+                    <h3 className="font-bold text-foreground mb-2">Thank You for Your Feedback!</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Your input helps us improve the mannuh platform.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handlePollSubmit} className="space-y-6">
+                    {/* Rating */}
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-3 block">
+                        How would you rate your experience on the platform so far?
+                      </label>
+                      <div className="flex gap-2 justify-center">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <button
+                            key={star}
+                            type="button"
+                            onClick={() => setPollData({ ...pollData, rating: star })}
+                            className="transition-transform hover:scale-110"
+                          >
+                            <Star
+                              className={`w-10 h-10 ${
+                                star <= pollData.rating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                      {pollData.rating > 0 && (
+                        <p className="text-center text-sm text-muted-foreground mt-2">
+                          {pollData.rating === 5 && "Excellent! We're thrilled you love it!"}
+                          {pollData.rating === 4 && "Great! We're glad you're enjoying it!"}
+                          {pollData.rating === 3 && "Good! We'll keep improving!"}
+                          {pollData.rating === 2 && "Thanks for the feedback. We'll do better!"}
+                          {pollData.rating === 1 && "We're sorry. Tell us how we can improve!"}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Features to Improve */}
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-3 block">
+                        Which features would you like us to improve?
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          "Cell Groups",
+                          "Video Reels",
+                          "Church Directory",
+                          "Events",
+                          "Messaging",
+                          "Search",
+                          "Browse/Discovery",
+                          "User Profiles"
+                        ].map((feature) => (
+                          <button
+                            key={feature}
+                            type="button"
+                            onClick={() => toggleFeature('toImprove', feature)}
+                            className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
+                              pollData.features.toImprove.includes(feature)
+                                ? "bg-primary text-white border-primary"
+                                : "bg-background border-border hover:border-primary"
+                            }`}
+                          >
+                            {feature}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Features to Remove */}
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-3 block">
+                        Are there any features you think should be removed?
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          "Merchandise Store",
+                          "Wordly Series",
+                          "Donate Section",
+                          "Advertisements",
+                          "Audio Player",
+                          "Notifications"
+                        ].map((feature) => (
+                          <button
+                            key={feature}
+                            type="button"
+                            onClick={() => toggleFeature('toRemove', feature)}
+                            className={`px-4 py-2 rounded-lg border text-sm transition-colors ${
+                              pollData.features.toRemove.includes(feature)
+                                ? "bg-red-500 text-white border-red-500"
+                                : "bg-background border-border hover:border-red-300"
+                            }`}
+                          >
+                            {feature}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Features to Implement */}
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">
+                        What new features would you like to see on the platform?
+                      </label>
+                      <textarea
+                        value={pollData.features.toImplement}
+                        onChange={(e) => setPollData({
+                          ...pollData,
+                          features: { ...pollData.features, toImplement: e.target.value }
+                        })}
+                        rows={4}
+                        className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                        placeholder="Share your ideas for new features..."
+                      />
+                    </div>
+                    
+                    <Button 
+                      type="submit" 
+                      className="w-full"
+                      disabled={pollData.rating === 0}
+                    >
+                      Submit Poll
+                    </Button>
+                  </form>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
         </section>
 
         {/* User Feedback Form */}
