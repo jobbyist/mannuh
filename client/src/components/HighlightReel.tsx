@@ -11,75 +11,78 @@ interface Story {
   title: string;
 }
 
+// Use placeholder image for all stories
+const STORY_PLACEHOLDER = "/mannuhstoryplaceholder.png";
+
 const sampleStories: Story[] = [
   {
     id: 1,
     username: "Sarah M.",
     avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Faith Journey",
   },
   {
     id: 2,
     username: "John D.",
     avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Prayer Power",
   },
   {
     id: 3,
     username: "Maria G.",
     avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "God's Love",
   },
   {
     id: 4,
     username: "David L.",
     avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1519741497674-611481863552?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Testimony",
   },
   {
     id: 5,
     username: "Emma S.",
     avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Blessed Life",
   },
   {
     id: 6,
     username: "Michael P.",
     avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Worship",
   },
   {
     id: 7,
     username: "Jessica R.",
     avatarUrl: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1470116945706-e6bf5d5a53ca?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Hope",
   },
   {
     id: 8,
     username: "Chris T.",
     avatarUrl: "https://images.unsplash.com/photo-1463453091185-61582044d556?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Grace",
   },
   {
     id: 9,
     username: "Rachel K.",
     avatarUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1489549132488-d00b7eee80f1?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Joy",
   },
   {
     id: 10,
     username: "Daniel M.",
     avatarUrl: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=100&h=100&fit=crop",
-    imageUrl: "https://images.unsplash.com/photo-1532635270-9c30f79d45ed?w=800&h=1200&fit=crop",
+    imageUrl: STORY_PLACEHOLDER,
     title: "Peace",
   },
 ];
