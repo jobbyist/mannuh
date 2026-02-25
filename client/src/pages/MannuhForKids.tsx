@@ -3,9 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Layout from "@/components/Layout";
 import Footer from "@/components/Footer";
+import KidsPreloader from "@/components/KidsPreloader";
 import { Sparkles, BookOpen, Video, Headphones, Heart, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import { useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -50,6 +52,12 @@ const ageGroups = [
 ];
 
 export default function MannuhForKids() {
+  const [showPreloader, setShowPreloader] = useState(true);
+
+  if (showPreloader) {
+    return <KidsPreloader onComplete={() => setShowPreloader(false)} />;
+  }
+
   return (
     <Layout>
       <div className="min-h-screen bg-background">
