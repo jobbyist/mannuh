@@ -16,6 +16,7 @@ import Shop from "./pages/Shop";
 import SupportCenter from "./pages/SupportCenter";
 import FoundingMembers from "./pages/FoundingMembers";
 import About from "./pages/About";
+import Onboarding from "./pages/Onboarding";
 import AdvertiseWithUs from "./pages/AdvertiseWithUs";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
@@ -65,6 +66,7 @@ function Router() {
       <Route path="/ads" component={AdvertiseWithUs} />
       <Route path="/support" component={SupportCenter} />
       <Route path="/about" component={About} />
+      <Route path="/onboarding" component={Onboarding} />
       <Route path="/founding-members" component={FoundingMembers} />
       <Route path="/profile/:id">{(params) => <Layout><Profile userId={Number(params.id)} /></Layout>}</Route>
       <Route path="/search" component={() => <Layout><Search /></Layout>} />
