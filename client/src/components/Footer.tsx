@@ -24,9 +24,9 @@ const aboutLinks = [
   { labelKey: "footer.companyProfile", href: "/about" },
   { labelKey: "footer.foundingMembers", href: "/founding-members" },
   { labelKey: "footer.advertise", href: "/ads" },
-  { labelKey: "footer.supportCause", href: "/support" },
+  { labelKey: "footer.supportCause", href: "/causes" },
   { labelKey: "footer.businessSolutions", href: "/business" },
-  { labelKey: "footer.partnerProgram", href: "/partner" },
+  { labelKey: "footer.partnerProgram", href: "/unavailable" },
   { labelKey: "footer.donate", href: "/donate" },
   { labelKey: "footer.helpCenter", href: "/help" },
 ];

@@ -26,6 +26,9 @@ import Settings from "./pages/Settings";
 import Pathways from "./pages/Pathways";
 import Events from "./pages/Events";
 import Churches from "./pages/Churches";
+import Causes from "./pages/Causes";
+import Donate from "./pages/Donate";
+import Unavailable from "./pages/Unavailable";
 import Layout from "./components/Layout";
 import CookieBanner from "./components/CookieBanner";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
@@ -53,6 +56,9 @@ function Router() {
       <Route path="/pathways" component={() => <Layout><Pathways /></Layout>} />
       <Route path="/events" component={() => <Layout><Events /></Layout>} />
       <Route path="/churches" component={() => <Layout><Churches /></Layout>} />
+      <Route path="/causes" component={() => <Layout><Causes /></Layout>} />
+      <Route path="/donate" component={() => <Layout><Donate /></Layout>} />
+      <Route path="/unavailable" component={() => <Layout><Unavailable /></Layout>} />
       <Route path="/merchandise" component={Merchandise} />
       <Route path="/shop" component={Shop} />
       <Route path="/ads" component={AdvertiseWithUs} />
