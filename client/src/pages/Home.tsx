@@ -11,6 +11,8 @@ import { trpc } from "@/lib/trpc";
 import Footer from "@/components/Footer";
 import LogoReel from "@/components/LogoReel";
 import Preloader from "@/components/Preloader";
+import HighlightReel from "@/components/HighlightReel";
+import SponsoredBanner from "@/components/SponsoredBanner";
 import { useState } from "react";
 
 const fadeUp = {
@@ -82,6 +84,9 @@ export default function Home() {
         <div className="absolute top-40 left-[5%] w-32 h-32 geo-circle-pink opacity-30 pointer-events-none" />
         <div className="absolute bottom-20 right-[20%] w-20 h-20 geo-square opacity-20 pointer-events-none" />
         <div className="absolute top-[60%] left-[15%] w-16 h-16 rounded-full bg-[oklch(0.82_0.06_240_/_0.1)] pointer-events-none" />
+
+        {/* Highlight Reel - Instagram Stories Style */}
+        <HighlightReel />
 
         {/* Hero Section */}
         <section className="container pt-20 pb-28 md:pt-32 md:pb-40">
@@ -160,6 +165,11 @@ export default function Home() {
 
         {/* Logo Reel - Partners Section */}
         <LogoReel />
+
+        {/* Sponsored Banner */}
+        <section className="container py-12">
+          <SponsoredBanner variant="horizontal" />
+        </section>
 
         {/* Features Section */}
         <section className="container pb-28">
@@ -496,6 +506,11 @@ export default function Home() {
             </div>
           </section>
         )}
+
+        {/* Sponsored Banner 2 */}
+        <section className="container pb-12">
+          <SponsoredBanner variant="horizontal" />
+        </section>
 
         {/* The Wordly Series Podcast Section */}
         <section className="bg-white border-y border-border/50">

@@ -13,11 +13,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import {
   User, Bell, CreditCard, Shield, Sparkles, Upload, Save, Instagram,
-  Twitter, Facebook, Youtube, Globe
+  Twitter, Facebook, Youtube, Globe, BookHeart
 } from "lucide-react";
 import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import Footer from "@/components/Footer";
+import PrayerJournal from "@/components/PrayerJournal";
 
 export default function Settings() {
   const { user, isAuthenticated } = useAuth();
@@ -102,7 +103,7 @@ export default function Settings() {
             </div>
 
             <Tabs defaultValue="profile" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-5">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6">
                 <TabsTrigger value="profile">
                   <User className="w-4 h-4 mr-2" />
                   Profile
@@ -118,6 +119,10 @@ export default function Settings() {
                 <TabsTrigger value="creator">
                   <Sparkles className="w-4 h-4 mr-2" />
                   Creator
+                </TabsTrigger>
+                <TabsTrigger value="prayer" className="hidden lg:flex">
+                  <BookHeart className="w-4 h-4 mr-2" />
+                  Prayer Journal
                 </TabsTrigger>
                 <TabsTrigger value="privacy" className="hidden lg:flex">
                   <Shield className="w-4 h-4 mr-2" />
@@ -596,6 +601,36 @@ export default function Settings() {
                     </Button>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* Prayer Journal Tab (Premium Feature) */}
+              <TabsContent value="prayer" className="space-y-6">
+                {user?.isPremium ? (
+                  <PrayerJournal />
+                ) : (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Prayer Journal</CardTitle>
+                      <CardDescription>Premium Feature</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <BookHeart className="w-16 h-16 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-semibold mb-2">
+                          Prayer Journal is a Premium Feature
+                        </h3>
+                        <p className="text-sm text-muted-foreground max-w-md mb-6">
+                          Track your prayer requests, celebrate answered prayers, and grow in your faith journey with our Prayer Journal feature.
+                        </p>
+                        <Button asChild>
+                          <a href="/pricing">
+                            Upgrade to Premium
+                          </a>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
 
               {/* Privacy Settings */}

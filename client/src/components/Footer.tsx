@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import {
   Instagram, Twitter, Facebook, Music, Youtube, MessageCircle,
-  Mail, Apple, Chrome
+  Mail, Apple, Chrome, CreditCard
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -405,13 +405,11 @@ export default function Footer() {
             {/* Brand Section */}
             <div className="col-span-1">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">m</span>
-                </div>
+                <img src="/mannuhlogo.png" alt="mannuh" className="w-8 h-8 object-contain" />
                 <span className="font-bold text-xl tracking-tight">mannuh</span>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                A community for believers, by believers.
+              <p className="text-sm mb-4">
+                <strong>Premier Faith-Based Community Platform</strong>
               </p>
               {/* Social Media Links */}
               <div className="flex flex-wrap gap-2">
@@ -521,11 +519,77 @@ export default function Footer() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <div className="px-4 py-2 bg-muted rounded-lg text-xs font-medium text-muted-foreground">
-                  Coming Soon to Google Play
+                <a 
+                  href="https://play.google.com/store" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors"
+                >
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                  </svg>
+                  <div className="text-left">
+                    <div className="text-[10px] opacity-80">GET IT ON</div>
+                    <div className="text-xs font-semibold leading-tight">Google Play</div>
+                  </div>
+                </a>
+                <a 
+                  href="https://apps.apple.com" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors"
+                >
+                  <Apple className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className="text-[10px] opacity-80">Download on the</div>
+                    <div className="text-xs font-semibold leading-tight">App Store</div>
+                  </div>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="border-t border-border/50 pt-8 mb-8">
+            <div className="flex flex-col items-center gap-4">
+              <p className="text-xs text-muted-foreground font-medium">Accepted Payment Methods</p>
+              <div className="flex items-center gap-4 flex-wrap justify-center">
+                {/* Visa */}
+                <div className="h-8 px-3 bg-white border border-border/50 rounded flex items-center justify-center">
+                  <svg className="h-5" viewBox="0 0 48 16" fill="none">
+                    <path d="M18.5 0.5L15.5 15.5H11.5L14.5 0.5H18.5Z" fill="#00579F"/>
+                    <path d="M31 1C30 0.5 28.5 0 26.5 0C22.5 0 19.5 2 19.5 5C19.5 7.5 21.5 8.5 23 9.5C24.5 10 25 11 25 11.5C25 12.5 24 13 22.5 13C20.5 13 19.5 12.5 18 12L17.5 14.5C19 15 20.5 15.5 22.5 15.5C27 15.5 29.5 13.5 29.5 10.5C29.5 6 24 5.5 24 4C24 3.5 24.5 3 26 3C27.5 3 29 3.5 30 4L31 1Z" fill="#00579F"/>
+                    <path d="M37 0.5C36.5 0.5 36 1 35.5 1.5L29 15.5H33.5L34.5 13H40L40.5 15.5H44.5L41 0.5H37ZM37.5 5L39 10H35.5L37.5 5Z" fill="#00579F"/>
+                    <path d="M10 0.5L6 11L5.5 9C4.5 6 2 3 0 1.5L4 15.5H8.5L15 0.5H10Z" fill="#00579F"/>
+                  </svg>
                 </div>
-                <div className="px-4 py-2 bg-muted rounded-lg text-xs font-medium text-muted-foreground">
-                  Coming Soon to App Store
+                {/* Mastercard */}
+                <div className="h-8 px-3 bg-white border border-border/50 rounded flex items-center justify-center">
+                  <svg className="h-5" viewBox="0 0 48 32" fill="none">
+                    <circle cx="18" cy="16" r="14" fill="#EB001B"/>
+                    <circle cx="30" cy="16" r="14" fill="#F79E1B"/>
+                    <path d="M24 6C21 9 19 12.5 19 16.5C19 20.5 21 24 24 27C27 24 29 20.5 29 16.5C29 12.5 27 9 24 6Z" fill="#FF5F00"/>
+                  </svg>
+                </div>
+                {/* American Express */}
+                <div className="h-8 px-3 bg-[#006FCF] border border-border/50 rounded flex items-center justify-center">
+                  <svg className="h-4" viewBox="0 0 48 16" fill="white">
+                    <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="10" fontWeight="bold" fill="white">AMEX</text>
+                  </svg>
+                </div>
+                {/* PayPal */}
+                <div className="h-8 px-3 bg-white border border-border/50 rounded flex items-center justify-center">
+                  <svg className="h-5" viewBox="0 0 48 16" fill="none">
+                    <path d="M18 1H12L8 15H12L13 11H15C19 11 21 9 21.5 5.5C22 2 20 1 18 1Z" fill="#003087"/>
+                    <path d="M18 1H12L8 15H12L13 11H15C19 11 21 9 21.5 5.5C22 2 20 1 18 1Z" fill="#009CDE" opacity="0.7"/>
+                    <path d="M28 4H22L18 15H22L23 12H25C28 12 30 10.5 30.5 7.5C31 5 29.5 4 28 4Z" fill="#003087"/>
+                    <path d="M28 4H22L18 15H22L23 12H25C28 12 30 10.5 30.5 7.5C31 5 29.5 4 28 4Z" fill="#009CDE" opacity="0.7"/>
+                  </svg>
+                </div>
+                {/* Apple Pay */}
+                <div className="h-8 px-3 bg-white border border-border/50 rounded flex items-center justify-center gap-1">
+                  <Apple className="w-4 h-4" />
+                  <span className="text-xs font-semibold">Pay</span>
                 </div>
               </div>
             </div>

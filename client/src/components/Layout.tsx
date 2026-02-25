@@ -70,9 +70,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">m</span>
-              </div>
+              <img src="/mannuhlogo.png" alt="mannuh" className="w-8 h-8 object-contain" />
               <span className="font-bold text-xl tracking-tight text-foreground">mannuh</span>
             </Link>
 
