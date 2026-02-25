@@ -1,7 +1,7 @@
 {
-  "name": "mannuh",
+  "name": "mannuh - Christian Social Network",
   "short_name": "mannuh",
-  "description": "Faith-based community platform for believers worldwide",
+  "description": "Premier Christian social media platform connecting believers worldwide. Join church communities, Christian groups, watch faith-based content, and grow spiritually with fellow Christians.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -21,7 +21,7 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["lifestyle", "social"],
+  "categories": ["lifestyle", "social", "faith", "community"],
   "shortcuts": [
     {
       "name": "Cell Groups",
