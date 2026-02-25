@@ -3,7 +3,9 @@ import { drizzle } from "drizzle-orm/mysql2";
 import {
   InsertUser, users, cellGroups, cellGroupMembers, meetings,
   reels, reelLikes, reelComments, follows, discoveryContent,
-  tags, notifications
+  tags, notifications, pathways, pathwaySteps, pathwayProgress,
+  articles, articleLikes, articleComments, events, eventRegistrations,
+  churches, userBadges, userBlocks, userMutes, directMessages
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -395,4 +397,246 @@ export async function notifyFollowers(creatorId: number, data: { type: "reel"; t
   if (followerRows.length === 0) return;
   const notifs = followerRows.map(f => ({ userId: f.followerId, ...data }));
   await db.insert(notifications).values(notifs);
+}
+
+// ===== PATHWAYS =====
+export async function getPathways(opts: { limit?: number; isPremium?: boolean } = {}) {
+  const db = await getDb();
+  if (!db) return [];
+  const { limit = 50, isPremium } = opts;
+  const conditions = [];
+  if (isPremium !== undefined) conditions.push(eq(pathways.isPremium, isPremium));
+  return db.select().from(pathways).where(conditions.length > 0 ? and(...conditions) : undefined).orderBy(pathways.order).limit(limit);
+}
+
+export async function getPathwayById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(pathways).where(eq(pathways.id, id)).limit(1);
+  return result[0] ?? undefined;
+}
+
+export async function getPathwaySteps(pathwayId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(pathwaySteps).where(eq(pathwaySteps.pathwayId, pathwayId)).orderBy(pathwaySteps.order);
+}
+
+export async function getUserPathwayProgress(userId: number, pathwayId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(pathwayProgress).where(and(eq(pathwayProgress.userId, userId), eq(pathwayProgress.pathwayId, pathwayId))).limit(1);
+  return result[0] ?? undefined;
+}
+
+export async function updatePathwayProgress(userId: number, pathwayId: number, data: { completedSteps?: string; currentStep?: number; isCompleted?: boolean }) {
+  const db = await getDb();
+  if (!db) return;
+  const existing = await getUserPathwayProgress(userId, pathwayId);
+  if (existing) {
+    await db.update(pathwayProgress).set(data).where(and(eq(pathwayProgress.userId, userId), eq(pathwayProgress.pathwayId, pathwayId)));
+  } else {
+    await db.insert(pathwayProgress).values({ userId, pathwayId, ...data });
+  }
+}
+
+// ===== ARTICLES =====
+export async function getArticles(opts: { limit?: number; offset?: number; isPremium?: boolean; category?: string } = {}) {
+  const db = await getDb();
+  if (!db) return [];
+  const { limit = 20, offset = 0, isPremium, category } = opts;
+  const conditions = [];
+  if (isPremium !== undefined) conditions.push(eq(articles.isPremium, isPremium));
+  if (category) conditions.push(eq(articles.category, category));
+  return db.select().from(articles).where(conditions.length > 0 ? and(...conditions) : undefined).orderBy(desc(articles.publishedAt)).limit(limit).offset(offset);
+}
+
+export async function getArticleBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(articles).where(eq(articles.slug, slug)).limit(1);
+  return result[0] ?? undefined;
+}
+
+export async function getArticleById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(articles).where(eq(articles.id, id)).limit(1);
+  return result[0] ?? undefined;
+}
+
+export async function likeArticle(articleId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const existing = await db.select().from(articleLikes).where(and(eq(articleLikes.articleId, articleId), eq(articleLikes.userId, userId))).limit(1);
+  if (existing.length > 0) return false;
+  await db.insert(articleLikes).values({ articleId, userId });
+  await db.update(articles).set({ likesCount: sql`${articles.likesCount} + 1` }).where(eq(articles.id, articleId));
+  return true;
+}
+
+export async function hasLikedArticle(articleId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.select().from(articleLikes).where(and(eq(articleLikes.articleId, articleId), eq(articleLikes.userId, userId))).limit(1);
+  return result.length > 0;
+}
+
+export async function getArticleComments(articleId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(articleComments).where(eq(articleComments.articleId, articleId)).orderBy(desc(articleComments.createdAt));
+}
+
+export async function addArticleComment(articleId: number, userId: number, content: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const [result] = await db.insert(articleComments).values({ articleId, userId, content }).$returningId();
+  await db.update(articles).set({ commentsCount: sql`${articles.commentsCount} + 1` }).where(eq(articles.id, articleId));
+  return result.id;
+}
+
+export async function incrementArticleViews(articleId: number) {
+  const db = await getDb();
+  if (!db) return;
+  await db.update(articles).set({ viewsCount: sql`${articles.viewsCount} + 1` }).where(eq(articles.id, articleId));
+}
+
+// ===== EVENTS =====
+export async function getEvents(opts: { limit?: number; offset?: number; eventType?: string; category?: string } = {}) {
+  const db = await getDb();
+  if (!db) return [];
+  const { limit = 20, offset = 0, eventType, category } = opts;
+  const conditions = [];
+  if (eventType) conditions.push(eq(events.eventType, eventType as any));
+  if (category) conditions.push(eq(events.category, category));
+  return db.select().from(events).where(conditions.length > 0 ? and(...conditions) : undefined).orderBy(desc(events.startTime)).limit(limit).offset(offset);
+}
+
+export async function getEventById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(events).where(eq(events.id, id)).limit(1);
+  return result[0] ?? undefined;
+}
+
+export async function createEvent(data: any) {
+  const db = await getDb();
+  if (!db) return null;
+  const [result] = await db.insert(events).values(data).$returningId();
+  return result.id;
+}
+
+export async function registerForEvent(eventId: number, userId: number, ticketsPurchased = 1) {
+  const db = await getDb();
+  if (!db) return false;
+  const existing = await db.select().from(eventRegistrations).where(and(eq(eventRegistrations.eventId, eventId), eq(eventRegistrations.userId, userId))).limit(1);
+  if (existing.length > 0) return false;
+  await db.insert(eventRegistrations).values({ eventId, userId, ticketsPurchased });
+  return true;
+}
+
+export async function isRegisteredForEvent(eventId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.select().from(eventRegistrations).where(and(eq(eventRegistrations.eventId, eventId), eq(eventRegistrations.userId, userId))).limit(1);
+  return result.length > 0;
+}
+
+export async function getEventRegistrations(eventId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(eventRegistrations).where(eq(eventRegistrations.eventId, eventId));
+}
+
+// ===== CHURCHES =====
+export async function getChurches(opts: { limit?: number; offset?: number; search?: string; country?: string; denomination?: string } = {}) {
+  const db = await getDb();
+  if (!db) return [];
+  const { limit = 100, offset = 0, search, country, denomination } = opts;
+  const conditions = [];
+  if (search) conditions.push(or(like(churches.name, `%${search}%`), like(churches.pastor, `%${search}%`))!);
+  if (country) conditions.push(eq(churches.country, country));
+  if (denomination) conditions.push(eq(churches.denomination, denomination));
+  return db.select().from(churches).where(conditions.length > 0 ? and(...conditions) : undefined).orderBy(churches.name).limit(limit).offset(offset);
+}
+
+export async function getChurchById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(churches).where(eq(churches.id, id)).limit(1);
+  return result[0] ?? undefined;
+}
+
+// ===== USER BADGES =====
+export async function getUserBadges(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(userBadges).where(eq(userBadges.userId, userId)).orderBy(desc(userBadges.earnedAt));
+}
+
+export async function awardBadge(userId: number, badgeType: string, badgeData?: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const [result] = await db.insert(userBadges).values({ userId, badgeType, badgeData }).$returningId();
+  return result.id;
+}
+
+// ===== BLOCK/MUTE =====
+export async function blockUser(userId: number, blockedUserId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const existing = await db.select().from(userBlocks).where(and(eq(userBlocks.userId, userId), eq(userBlocks.blockedUserId, blockedUserId))).limit(1);
+  if (existing.length > 0) return false;
+  await db.insert(userBlocks).values({ userId, blockedUserId });
+  return true;
+}
+
+export async function unblockUser(userId: number, blockedUserId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  await db.delete(userBlocks).where(and(eq(userBlocks.userId, userId), eq(userBlocks.blockedUserId, blockedUserId)));
+  return true;
+}
+
+export async function isBlocked(userId: number, blockedUserId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.select().from(userBlocks).where(and(eq(userBlocks.userId, userId), eq(userBlocks.blockedUserId, blockedUserId))).limit(1);
+  return result.length > 0;
+}
+
+export async function muteUser(userId: number, mutedUserId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const existing = await db.select().from(userMutes).where(and(eq(userMutes.userId, userId), eq(userMutes.mutedUserId, mutedUserId))).limit(1);
+  if (existing.length > 0) return false;
+  await db.insert(userMutes).values({ userId, mutedUserId });
+  return true;
+}
+
+export async function unmuteUser(userId: number, mutedUserId: number) {
+  const db = await getDb();
+  if (!db) return false;
+  await db.delete(userMutes).where(and(eq(userMutes.userId, userId), eq(userMutes.mutedUserId, mutedUserId)));
+  return true;
+}
+
+// ===== DIRECT MESSAGES =====
+export async function sendDirectMessage(senderId: number, recipientId: number, content: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const [result] = await db.insert(directMessages).values({ senderId, recipientId, content }).$returningId();
+  return result.id;
+}
+
+export async function getDirectMessages(userId: number, otherUserId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(directMessages).where(
+    or(
+      and(eq(directMessages.senderId, userId), eq(directMessages.recipientId, otherUserId)),
+      and(eq(directMessages.senderId, otherUserId), eq(directMessages.recipientId, userId))
+    )!
+  ).orderBy(directMessages.createdAt);
 }
