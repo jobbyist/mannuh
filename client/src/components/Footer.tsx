@@ -19,29 +19,35 @@ const socialLinks = [
   { icon: Chrome, href: "https://www.google.com/", label: "Google" },
 ];
 
-const quickLinks = [
-  { label: "About Mannuh", href: "/about" },
-  { label: "Cell Groups", href: "/groups" },
-  { label: "Reels", href: "/reels" },
-  { label: "Browse Content", href: "/browse" },
-  { label: "Discover Stories", href: "/discover" },
-  { label: "Guided Pathways", href: "/pathways" },
-  { label: "Events", href: "/events" },
-  { label: "Church Directory", href: "/churches" },
-  { label: "Listen To Podcast", href: "/wordly-series" },
-  { label: "Merchandise", href: "/merchandise" },
-  { label: "Pricing Plans", href: "/pricing" },
-];
-
-const communityLinks = [
-  { label: "Mannuh for Kids", href: "/kids" },
+const aboutLinks = [
+  { label: "Company Profile", href: "/about" },
   { label: "Founding Members", href: "/founding-members" },
-  { label: "Help Center", href: "/help" },
   { label: "Advertise With Us", href: "/ads" },
   { label: "Support A Cause", href: "/support" },
   { label: "Business Solutions", href: "/business" },
   { label: "Partner Program", href: "/partner" },
   { label: "Donate/Support", href: "/donate" },
+  { label: "Help Center", href: "/help" },
+];
+
+const exploreLinks = [
+  { label: "Create/Join Cell Groups", href: "/groups" },
+  { label: "Featured Articles & Stories", href: "/discover" },
+  { label: "Guided Pathways & Courses", href: "/pathways" },
+  { label: "Discover Upcoming Events", href: "/events" },
+  { label: "The Wordly Podcast Series", href: "/wordly-series" },
+  { label: "Church/Ministry Directory", href: "/churches" },
+  { label: "Membership Pricing Plans", href: "/pricing" },
+  { label: "The Official Mannuh Store", href: "/shop" },
+];
+
+const quickLinks = [
+  { label: "Terms of Use", href: "#", onClick: "terms" },
+  { label: "Privacy Policy", href: "#", onClick: "privacy" },
+  { label: "Cookie Policy", href: "#", onClick: "cookies" },
+  { label: "Refund Policy", href: "#", onClick: "refunds" },
+  { label: "Community", href: "#", onClick: "guidelines" },
+  { label: "Contact Us", href: "#", onClick: "contact" },
 ];
 
 const legalPolicies = {
@@ -593,7 +599,7 @@ export default function Footer() {
             {/* Brand Section */}
             <div className="col-span-1">
               <div className="mb-4">
-                <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '250px', height: 'auto' }} />
+                <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '200px', height: 'auto' }} />
               </div>
               <p className="text-sm mb-4">
                 <strong>Premier Faith-Based Community Platform</strong>
@@ -615,89 +621,52 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Quick Links */}
+            {/* ABOUT */}
             <div>
-              <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
+              <h3 className="font-semibold text-foreground mb-4">ABOUT</h3>
+              <ul className="space-y-2">
+                {aboutLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href}>
+                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                        {link.label}
+                      </a>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* EXPLORE */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-4">EXPLORE</h3>
+              <ul className="space-y-2">
+                {exploreLinks.map((link) => (
+                  <li key={link.label}>
+                    <Link href={link.href}>
+                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                        {link.label}
+                      </a>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* QUICK LINKS */}
+            <div>
+              <h3 className="font-semibold text-foreground mb-4">QUICK LINKS</h3>
               <ul className="space-y-2">
                 {quickLinks.map((link) => (
                   <li key={link.label}>
-                    <Link href={link.href}>
-                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                        {link.label}
-                      </a>
-                    </Link>
+                    <button
+                      onClick={() => setOpenPolicy(link.onClick as LegalPolicy)}
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                    >
+                      {link.label}
+                    </button>
                   </li>
                 ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Community</h3>
-              <ul className="space-y-2">
-                {communityLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link href={link.href}>
-                      <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                        {link.label}
-                      </a>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Legal */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("terms")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Terms of Service
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("privacy")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Privacy Policy
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("cookies")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Cookie Policy
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("refunds")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Refund Policy
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("guidelines")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Community Guidelines
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setOpenPolicy("contact")}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
-                  >
-                    Contact Us
-                  </button>
-                </li>
               </ul>
             </div>
           </div>
