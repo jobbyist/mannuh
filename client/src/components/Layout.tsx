@@ -13,7 +13,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import {
-  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home, Moon, Sun, Globe, Settings
+  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home, Moon, Sun, Globe, Settings,
+  BookOpen, ShoppingBag, CreditCard, HelpCircle, Baby, Award, Podcast, MoreHorizontal
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
@@ -24,6 +25,16 @@ const navItems = [
   { href: "/groups", label: "Cell Groups", icon: Users },
   { href: "/reels", label: "Reels", icon: Play },
   { href: "/discover", label: "Discover", icon: Compass },
+];
+
+const moreNavItems = [
+  { href: "/browse", label: "Browse Content", icon: BookOpen },
+  { href: "/wordly-series", label: "Podcast", icon: Podcast },
+  { href: "/merchandise", label: "Merchandise", icon: ShoppingBag },
+  { href: "/pricing", label: "Pricing", icon: CreditCard },
+  { href: "/kids", label: "Mannuh for Kids", icon: Baby },
+  { href: "/founding-members", label: "Founding Members", icon: Award },
+  { href: "/help", label: "Help Center", icon: HelpCircle },
 ];
 
 const languages = [
@@ -80,6 +91,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               })}
+              
+              {/* More menu dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                    <MoreHorizontal className="w-4 h-4" />
+                    More
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52">
+                  {moreNavItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <DropdownMenuItem key={item.href} asChild>
+                        <Link href={item.href} className="flex items-center gap-2">
+                          <Icon className="w-4 h-4" />
+                          {item.label}
+                        </Link>
+                      </DropdownMenuItem>
+                    );
+                  })}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             {/* Right side */}
@@ -186,6 +220,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="md:hidden pb-4 border-t border-border/50 pt-3">
               <div className="flex flex-col gap-1">
                 {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location === item.href;
+                  return (
+                    <Link key={item.href} href={item.href} onClick={() => setMobileMenuOpen(false)}>
+                      <button className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        isActive
+                          ? "bg-primary/10 text-primary"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      }`}>
+                        <Icon className="w-4 h-4" />
+                        {item.label}
+                      </button>
+                    </Link>
+                  );
+                })}
+                
+                {/* Divider */}
+                <div className="border-t border-border/50 my-2"></div>
+                
+                {/* More items in mobile */}
+                {moreNavItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = location === item.href;
                   return (
