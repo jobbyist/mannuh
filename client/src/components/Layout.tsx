@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import {
-  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home, Moon, Sun, Globe
+  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home, Moon, Sun, Globe, Settings
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import AIChatbot from "./AIChatbot";
 
 const navItems = [
   { href: "/groups", label: "Cell Groups", icon: Users },
@@ -151,6 +152,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         My Profile
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center gap-2">
+                        <Settings className="w-4 h-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => logout()} className="text-destructive">
                       <LogOut className="w-4 h-4 mr-2" />
@@ -204,6 +211,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="min-h-[calc(100vh-4rem)]">
         {children}
       </main>
+
+      {/* AI Chatbot */}
+      <AIChatbot />
     </div>
   );
 }
