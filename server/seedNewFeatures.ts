@@ -5,7 +5,7 @@
 
 import { drizzle } from "drizzle-orm/mysql2";
 import {
-  pathways, pathwaySteps, articles, events, churches
+  pathways, pathwaySteps, articles, events, churches, cellGroups
 } from "../drizzle/schema";
 
 async function getDb() {
@@ -1054,6 +1054,327 @@ async function seedChurches() {
   console.log("Note: In production, add 80 more churches to reach 100 total");
 }
 
+async function seedCellGroups() {
+  const db = await getDb();
+  console.log("Seeding cell groups...");
+
+  // Note: Using creatorId = 1 (assumes at least one user exists)
+  // In production, this should reference actual user IDs
+  
+  const cellGroupsData = [
+    // Bible Study Category (9 groups)
+    {
+      name: "Morning Bible Study - Gospel of John",
+      description: "Join us every Tuesday morning as we dive deep into the Gospel of John. Perfect for beginners and seasoned believers alike. We'll explore Jesus's divinity, miracles, and teachings through verse-by-verse study.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Tuesday", time: "07:00 AM", timezone: "EST", recurring: true }),
+      maxMembers: 25,
+      isPublic: true,
+    },
+    {
+      name: "Women's Bible Study - Proverbs",
+      description: "A supportive community for women seeking wisdom from Proverbs. We meet weekly to discuss practical applications of ancient wisdom in modern life. All ages welcome!",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Thursday", time: "06:30 PM", timezone: "EST", recurring: true }),
+      maxMembers: 20,
+      isPublic: true,
+    },
+    {
+      name: "Young Adults - Book of Romans",
+      description: "A dynamic study group for ages 18-35 exploring Paul's letter to the Romans. We tackle tough theological questions in a grace-filled environment.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Wednesday", time: "07:00 PM", timezone: "PST", recurring: true }),
+      maxMembers: 50,
+      isPublic: true,
+    },
+    {
+      name: "Men's Bible Study - Character of God",
+      description: "Men gathering to study God's character through Scripture. We focus on being better husbands, fathers, and leaders in our communities.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Saturday", time: "08:00 AM", timezone: "CST", recurring: true }),
+      maxMembers: 30,
+      isPublic: true,
+    },
+    {
+      name: "Prophetic Books Study Group",
+      description: "Exploring Isaiah, Jeremiah, Ezekiel, and the minor prophets. Understanding God's heart through the prophetic lens. Intermediate to advanced level.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1501290801209-c200001d1c90?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Sunday", time: "02:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 15,
+      isPublic: true,
+    },
+    {
+      name: "New Testament Letters Study",
+      description: "Rotating study of Paul's letters and general epistles. Each month we tackle a different book, unpacking its historical context and modern application.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Monday", time: "07:30 PM", timezone: "EST", recurring: true }),
+      maxMembers: 35,
+      isPublic: true,
+    },
+    {
+      name: "Spanish Bible Study - Psalms",
+      description: "Estudio bíblico en español enfocado en los Salmos. Un tiempo para adorar, aprender y crecer juntos en comunidad.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Friday", time: "07:00 PM", timezone: "CST", recurring: true }),
+      maxMembers: 20,
+      isPublic: true,
+    },
+    {
+      name: "Couples Bible Study - Marriage in Scripture",
+      description: "Married couples studying God's design for marriage through biblical examples and teachings. Strengthen your relationship while deepening your faith together.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Friday", time: "08:00 PM", timezone: "PST", recurring: true }),
+      maxMembers: 24,
+      isPublic: true,
+    },
+    {
+      name: "Beginner's Bible Study",
+      description: "New to the Bible? Start here! We cover basics of faith, how to study Scripture, and foundational Christian beliefs in a welcoming, no-pressure environment.",
+      category: "Bible Study",
+      imageUrl: "https://images.unsplash.com/photo-1470229538611-16ba8c7ffbd7?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Thursday", time: "07:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 40,
+      isPublic: true,
+    },
+
+    // Prayer Category (7 groups)
+    {
+      name: "Morning Prayer Warriors",
+      description: "Start your day with powerful corporate prayer. We intercede for our families, churches, communities, and nations. All prayer levels welcome!",
+      category: "Prayer",
+      imageUrl: "https://images.unsplash.com/photo-1487147264018-f937fba0c817?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Monday-Friday", time: "06:00 AM", timezone: "EST", recurring: true }),
+      maxMembers: 50,
+      isPublic: true,
+    },
+    {
+      name: "24/7 Prayer Chain",
+      description: "Round-the-clock prayer coverage. Sign up for a time slot and join believers worldwide in continuous prayer and worship.",
+      category: "Prayer",
+      imageUrl: "https://images.unsplash.com/photo-1501290801209-c200001d1c90?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Daily", time: "Various", timezone: "All Zones", recurring: true }),
+      maxMembers: 50,
+      isPublic: true,
+    },
+    {
+      name: "Healing Prayer Ministry",
+      description: "Believing God for physical, emotional, and spiritual healing. We pray for the sick, broken-hearted, and those in need of deliverance.",
+      category: "Prayer",
+      imageUrl: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Sunday", time: "07:00 PM", timezone: "CST", recurring: true }),
+      maxMembers: 30,
+      isPublic: true,
+    },
+    {
+      name: "Moms in Prayer",
+      description: "Mothers praying together for their children, schools, and families. Join us in lifting up the next generation!",
+      category: "Prayer",
+      imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Wednesday", time: "09:00 AM", timezone: "PST", recurring: true }),
+      maxMembers: 25,
+      isPublic: true,
+    },
+    {
+      name: "Intercessory Prayer Team",
+      description: "Advanced intercessors standing in the gap for breakthrough. We focus on strategic prayer for revival, awakening, and Kingdom advancement.",
+      category: "Prayer",
+      imageUrl: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Tuesday", time: "09:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 15,
+      isPublic: true,
+    },
+    {
+      name: "Young Adults Prayer Night",
+      description: "High-energy prayer and worship for young adults. We're passionate about seeing God move in our generation!",
+      category: "Prayer",
+      imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Friday", time: "09:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 50,
+      isPublic: true,
+    },
+    {
+      name: "Prayer Walking Group",
+      description: "We combine physical exercise with spiritual warfare! Join us as we prayer walk our neighborhoods, declaring God's promises over our communities.",
+      category: "Prayer",
+      imageUrl: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Saturday", time: "07:00 AM", timezone: "CST", recurring: true }),
+      maxMembers: 20,
+      isPublic: true,
+    },
+
+    // Missions Category (5 groups)
+    {
+      name: "Global Missions Support Team",
+      description: "Supporting missionaries worldwide through prayer, finances, and encouragement. Learn about different mission fields and how you can make an impact.",
+      category: "Missions",
+      imageUrl: "https://images.unsplash.com/photo-1532375810709-75b1da00537c?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Second Tuesday", time: "07:30 PM", timezone: "EST", recurring: true }),
+      maxMembers: 35,
+      isPublic: true,
+    },
+    {
+      name: "Local Outreach & Evangelism",
+      description: "Taking the Gospel to the streets! Join us for local outreach events, street evangelism, and community service projects.",
+      category: "Missions",
+      imageUrl: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Saturday", time: "10:00 AM", timezone: "PST", recurring: true }),
+      maxMembers: 30,
+      isPublic: true,
+    },
+    {
+      name: "Missions Prayer & Planning",
+      description: "For those called to missions work. We provide resources, training, and prayer support for short-term and long-term missionaries.",
+      category: "Missions",
+      imageUrl: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "First Monday", time: "07:00 PM", timezone: "CST", recurring: true }),
+      maxMembers: 20,
+      isPublic: true,
+    },
+    {
+      name: "International Students Ministry",
+      description: "Welcoming and ministering to international students. Share Christ's love through friendship, hospitality, and cultural exchange.",
+      category: "Missions",
+      imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Thursday", time: "06:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 25,
+      isPublic: true,
+    },
+    {
+      name: "Adopt-a-People Group",
+      description: "Focused prayer and action for unreached people groups. Each month we study a different unreached group and pray for breakthrough.",
+      category: "Missions",
+      imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Third Sunday", time: "03:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 15,
+      isPublic: true,
+    },
+
+    // Fellowship/Community Category (5 groups)
+    {
+      name: "Coffee & Conversations",
+      description: "Casual fellowship over coffee (virtual or in-person). Share life, encourage one another, and build authentic Christian friendships.",
+      category: "Fellowship",
+      imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Saturday", time: "10:00 AM", timezone: "EST", recurring: true }),
+      maxMembers: 12,
+      isPublic: true,
+    },
+    {
+      name: "Game Night Fellowship",
+      description: "Fun, laughter, and community! Join us for board games, video games, and great conversations. All ages and skill levels welcome.",
+      category: "Fellowship",
+      imageUrl: "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Friday", time: "07:30 PM", timezone: "PST", recurring: true }),
+      maxMembers: 20,
+      isPublic: true,
+    },
+    {
+      name: "Singles Fellowship",
+      description: "A community for single Christians to connect, encourage one another, and grow in faith together. No pressure, just genuine friendship.",
+      category: "Fellowship",
+      imageUrl: "https://images.unsplash.com/photo-1470229538611-16ba8c7ffbd7?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Second Friday", time: "07:00 PM", timezone: "CST", recurring: true }),
+      maxMembers: 35,
+      isPublic: true,
+    },
+    {
+      name: "Senior Saints Fellowship",
+      description: "For our seasoned believers! Share wisdom, life experiences, and enjoy meaningful fellowship with others in your season of life.",
+      category: "Fellowship",
+      imageUrl: "https://images.unsplash.com/photo-1519834785169-98be25ec3f84?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Wednesday", time: "02:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 30,
+      isPublic: true,
+    },
+    {
+      name: "Creative Arts Fellowship",
+      description: "For artists, musicians, writers, and creatives using their gifts for God's glory. Share your work, collaborate, and inspire each other.",
+      category: "Fellowship",
+      imageUrl: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Thursday", time: "07:00 PM", timezone: "PST", recurring: true }),
+      maxMembers: 18,
+      isPublic: true,
+    },
+
+    // Worship/Music Category (3 groups)
+    {
+      name: "Worship Leaders Collective",
+      description: "For worship leaders, musicians, and vocalists. Share resources, learn new songs, discuss worship theology, and pray for each other's ministries.",
+      category: "Worship",
+      imageUrl: "https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Monday", time: "08:00 PM", timezone: "EST", recurring: true }),
+      maxMembers: 25,
+      isPublic: true,
+    },
+    {
+      name: "Spontaneous Worship Night",
+      description: "Unscripted, Spirit-led worship and prayer. Bring your instrument or just your voice as we create space for God to move.",
+      category: "Worship",
+      imageUrl: "https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Last Friday", time: "08:00 PM", timezone: "PST", recurring: true }),
+      maxMembers: 50,
+      isPublic: true,
+    },
+    {
+      name: "Hymns & History Study",
+      description: "Exploring the rich heritage of Christian hymns. Learn the stories behind classic hymns and discover how they point us to Christ.",
+      category: "Worship",
+      imageUrl: "https://images.unsplash.com/photo-1501290801209-c200001d1c90?w=800&h=600&fit=crop",
+      creatorId: 1,
+      schedule: JSON.stringify({ day: "Second Sunday", time: "04:00 PM", timezone: "CST", recurring: true }),
+      maxMembers: 15,
+      isPublic: true,
+    },
+  ];
+
+  for (const group of cellGroupsData) {
+    await db.insert(cellGroups).values(group);
+  }
+
+  console.log("✓ Cell Groups seeded (29 groups across 5 categories)");
+  console.log("  - Bible Study: 9 groups");
+  console.log("  - Prayer: 7 groups");
+  console.log("  - Missions: 5 groups");
+  console.log("  - Fellowship: 5 groups");
+  console.log("  - Worship: 3 groups");
+}
+
 async function main() {
   console.log("Starting seed process...\n");
   
@@ -1062,6 +1383,7 @@ async function main() {
     await seedArticles();
     await seedEvents();
     await seedChurches();
+    await seedCellGroups();
     
     console.log("\n✅ All new features seeded successfully!");
     process.exit(0);
