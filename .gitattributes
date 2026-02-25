@@ -1,0 +1,17 @@
+# Vendored code - exclude from language statistics
+patches/** linguist-vendored
+
+# Generated migrations - mark as generated
+drizzle/*.sql linguist-generated
+drizzle/migrations/** linguist-generated
+
+# Public assets and service workers
+client/public/** linguist-documentation
+client/public/__manus__/** linguist-vendored
+
+# Lockfiles - exclude from diffs and language stats
+pnpm-lock.yaml linguist-generated
+package-lock.json linguist-generated
+
+# Documentation
+*.md linguist-documentation
