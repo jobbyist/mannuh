@@ -644,7 +644,7 @@ export default function Footer() {
             {/* Brand Section */}
             <div className="col-span-1">
               <div className="mb-4">
-                <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '200px', height: 'auto' }} />
+                <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '175px', height: 'auto' }} />
               </div>
               <p className="text-sm mb-4">
                 <strong>{t("footer.premierPlatform")}</strong>
