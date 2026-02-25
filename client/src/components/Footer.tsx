@@ -2,22 +2,20 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { useTranslation } from "react-i18next";
 import {
-  Instagram, Twitter, Facebook, Music, Youtube, MessageCircle,
-  Mail, Apple, Chrome, CreditCard
+  Mail, Apple
 } from "lucide-react";
+import { FaFacebookF, FaXTwitter, FaInstagram, FaWhatsapp, FaYoutube, FaSpotify } from "react-icons/fa6";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 const socialLinks = [
-  { icon: Instagram, href: "https://instagram.com/mannuh.space", label: "Instagram" },
-  { icon: Twitter, href: "https://twitter.com/mannuh.space", label: "Twitter/X" },
-  { icon: Facebook, href: "https://facebook.com/mannuh.space", label: "Facebook" },
-  { icon: Music, href: "https://tiktok.com/@mannuh.space", label: "TikTok" },
-  { icon: Youtube, href: "https://youtube.com/@mannuhspace", label: "YouTube" },
-  { icon: MessageCircle, href: "https://wa.me/", label: "WhatsApp" },
-  { icon: Music, href: "https://open.spotify.com/", label: "Spotify" },
-  { icon: Apple, href: "https://music.apple.com/", label: "Apple Music" },
-  { icon: Chrome, href: "https://www.google.com/", label: "Google" },
+  { icon: FaFacebookF, href: "https://facebook.com/mannuh.space", label: "Facebook", color: "#1877F2" },
+  { icon: FaXTwitter, href: "https://twitter.com/mannuh.space", label: "Twitter/X", color: "#000000" },
+  { icon: FaInstagram, href: "https://instagram.com/mannuh.space", label: "Instagram", color: "#E4405F" },
+  { icon: FaWhatsapp, href: "https://wa.me/", label: "WhatsApp", color: "#25D366" },
+  { icon: FaYoutube, href: "https://youtube.com/@mannuhspace", label: "YouTube", color: "#FF0000" },
+  { icon: FaSpotify, href: "https://open.spotify.com/", label: "Spotify", color: "#1DB954" },
 ];
 
 const aboutLinks = [
@@ -657,10 +655,14 @@ export default function Footer() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-9 h-9 rounded-lg bg-muted hover:bg-primary/10 hover:text-primary transition-colors flex items-center justify-center"
+                    className="w-10 h-10 rounded-lg bg-muted hover:bg-primary/10 transition-all duration-300 flex items-center justify-center group relative overflow-hidden"
                     title={social.label}
+                    style={{
+                      '--social-color': social.color
+                    } as React.CSSProperties}
                   >
-                    <social.icon className="w-4 h-4" />
+                    <social.icon className="w-5 h-5 text-muted-foreground group-hover:text-[var(--social-color)] transition-colors relative z-10" />
+                    <div className="absolute inset-0 bg-[var(--social-color)] opacity-0 group-hover:opacity-10 transition-opacity"></div>
                   </a>
                 ))}
               </div>
@@ -727,34 +729,49 @@ export default function Footer() {
                   </a>
                 </div>
               </div>
-              <div className="flex gap-3">
-                <a 
-                  href="https://play.google.com/store" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
-                  </svg>
-                  <div className="text-left">
-                    <div className="text-[10px] opacity-80">GET IT ON</div>
-                    <div className="text-xs font-semibold leading-tight">Google Play</div>
-                  </div>
-                </a>
-                <a 
-                  href="https://apps.apple.com" 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors"
-                >
-                  <Apple className="w-5 h-5" />
-                  <div className="text-left">
-                    <div className="text-[10px] opacity-80">Download on the</div>
-                    <div className="text-xs font-semibold leading-tight">App Store</div>
-                  </div>
-                </a>
-              </div>
+              <TooltipProvider>
+                <div className="flex gap-3">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={(e) => e.preventDefault()}
+                        className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors cursor-pointer"
+                      >
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                        </svg>
+                        <div className="text-left">
+                          <div className="text-[10px] opacity-80">GET IT ON</div>
+                          <div className="text-xs font-semibold leading-tight">Google Play</div>
+                        </div>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="font-semibold">Coming Soon!</p>
+                      <p className="text-xs">Mobile app launching April 2026</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={(e) => e.preventDefault()}
+                        className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors cursor-pointer"
+                      >
+                        <Apple className="w-5 h-5" />
+                        <div className="text-left">
+                          <div className="text-[10px] opacity-80">Download on the</div>
+                          <div className="text-xs font-semibold leading-tight">App Store</div>
+                        </div>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="font-semibold">Coming Soon!</p>
+                      <p className="text-xs">Mobile app launching April 2026</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
             </div>
           </div>
 

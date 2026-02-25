@@ -1,0 +1,30 @@
+# robots.txt for mannuh.space
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://mannuh.space/sitemap.xml
+
+# Disallow private/admin pages
+Disallow: /settings
+Disallow: /profile/edit
+Disallow: /admin
+Disallow: /api/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Allow search engines to index all public content
+Allow: /
+Allow: /about
+Allow: /churches
+Allow: /groups
+Allow: /discover
+Allow: /events
+Allow: /pathways
+Allow: /wordly-series
+Allow: /founding-members
+Allow: /pricing
+Allow: /shop
+Allow: /help
