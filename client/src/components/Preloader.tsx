@@ -102,8 +102,8 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         >
           {/* Logo */}
           <div className="mb-8 flex justify-center">
-            <div className="w-20 h-20 rounded-2xl bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-black text-3xl">m</span>
+            <div className="w-20 h-20 flex items-center justify-center">
+              <img src="/mannuhlogo.png" alt="mannuh" className="w-full h-full object-contain" />
             </div>
           </div>
 
