@@ -41,12 +41,12 @@ const exploreLinks = [
 ];
 
 const quickLinks = [
-  { labelKey: "footer.termsOfUse", href: "#", onClick: "terms" },
-  { labelKey: "footer.privacyPolicy", href: "#", onClick: "privacy" },
-  { labelKey: "footer.cookiePolicy", href: "#", onClick: "cookies" },
-  { labelKey: "footer.refundPolicy", href: "#", onClick: "refunds" },
-  { labelKey: "footer.community", href: "#", onClick: "guidelines" },
-  { labelKey: "footer.contactUs", href: "#", onClick: "contact" },
+  { label: "Terms of Service", href: "#", onClick: "terms" },
+  { label: "Privacy Statement", href: "#", onClick: "privacy" },
+  { label: "Cookie Preferences", href: "#", onClick: "cookies" },
+  { label: "Refunds & Exchanges", href: "#", onClick: "refunds" },
+  { label: "Community Guidelines", href: "#", onClick: "guidelines" },
+  { label: "Support Center", href: "#", onClick: "contact" },
 ];
 
 const legalPolicies = {
@@ -705,12 +705,12 @@ export default function Footer() {
               <h3 className="font-semibold text-foreground mb-4">{t("footer.quickLinks")}</h3>
               <ul className="space-y-2">
                 {quickLinks.map((link) => (
-                  <li key={link.labelKey}>
+                  <li key={link.label}>
                     <button
                       onClick={() => setOpenPolicy(link.onClick as LegalPolicy)}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
                     >
-                      {t(link.labelKey)}
+                      {link.label}
                     </button>
                   </li>
                 ))}
@@ -795,12 +795,6 @@ export default function Footer() {
                     <circle cx="18" cy="16" r="14" fill="#EB001B"/>
                     <circle cx="30" cy="16" r="14" fill="#F79E1B"/>
                     <path d="M24 6C21 9 19 12.5 19 16.5C19 20.5 21 24 24 27C27 24 29 20.5 29 16.5C29 12.5 27 9 24 6Z" fill="#FF5F00"/>
-                  </svg>
-                </div>
-                {/* American Express */}
-                <div className="h-8 px-3 bg-[#006FCF] border border-border/50 rounded flex items-center justify-center">
-                  <svg className="h-4" viewBox="0 0 48 16" fill="white">
-                    <text x="0" y="12" fontFamily="Arial, sans-serif" fontSize="10" fontWeight="bold" fill="white">AMEX</text>
                   </svg>
                 </div>
                 {/* PayPal */}
