@@ -63,6 +63,26 @@ export default function AIChatbot() {
   const getSimulatedResponse = (query: string): string => {
     const lowerQuery = query.toLowerCase();
 
+    if (lowerQuery.includes("prayer point") || lowerQuery.includes("prayer ideas")) {
+      return "Here are some prayer point ideas: 1) Pray for spiritual growth and deeper relationship with God, 2) Pray for wisdom and guidance in daily decisions, 3) Pray for unity and love within your church community, 4) Pray for those facing hardships or illness, 5) Pray for missionaries and global evangelism efforts, 6) Pray for your family's faith and protection, 7) Pray for church leaders and pastors.";
+    }
+
+    if (lowerQuery.includes("summarize") || lowerQuery.includes("article") || lowerQuery.includes("story")) {
+      return "To summarize an article or story, please share the link or paste the text you'd like me to summarize. I'll provide a concise overview of the main points and key takeaways.";
+    }
+
+    if (lowerQuery.includes("suggest") && lowerQuery.includes("cell group")) {
+      return "I can suggest cell groups based on your interests! Here are some popular options: Prayer Warriors (focused on intercessory prayer), Bible Study Fellowship (deep scripture study), Young Adults Ministry (ages 18-30), Missions & Outreach (community service), Worship & Creative Arts (music and arts), and Men's/Women's Fellowship groups. Visit the Cell Groups page to explore all available groups and their meeting times!";
+    }
+
+    if (lowerQuery.includes("bible") && lowerQuery.includes("fasting")) {
+      return "The Bible presents fasting as a spiritual discipline for drawing closer to God. Key verses include: Matthew 6:16-18 (Jesus teaches how to fast humbly), Isaiah 58:6-7 (true fasting includes justice and mercy), Acts 13:2-3 (early church fasted for guidance), and Daniel 10:3 (partial fasting). Fasting is often combined with prayer for seeking God's will, spiritual breakthrough, repentance, or intercession. Remember to fast safely and consult health professionals if needed.";
+    }
+
+    if (lowerQuery.includes("creator faq") || lowerQuery.includes("creator questions")) {
+      return "Creator Program FAQs: 1) How do I become a creator? Upgrade to Premium ($9.99/month) and enable Creator Mode in settings. 2) What content can I create? Reels, articles, stories, and podcast episodes. 3) How do I earn? Ad revenue sharing based on views and engagement. 4) When do I get paid? Monthly payouts for earnings above $50. 5) What are the content guidelines? All content must align with Christian values and community guidelines. Visit the Creator Partner Program page for full details!";
+    }
+
     if (lowerQuery.includes("cell group") || lowerQuery.includes("group")) {
       return "You can explore and join cell groups by clicking on the 'Cell Groups' tab in the navigation menu. There you'll find various groups based on different topics like Prayer, Bible Study, Missions, and more. Each group has a description and you can join with a single click!";
     }
@@ -91,9 +111,11 @@ export default function AIChatbot() {
   };
 
   const quickActions = [
-    { label: "Find Cell Groups", action: () => setInput("How do I find cell groups?") },
-    { label: "Creator Program", action: () => setInput("Tell me about the Creator Program") },
-    { label: "Create Support Ticket", action: () => setInput("I need help with an issue") },
+    { label: "Prayer Point Ideas", action: () => setInput("Give me ideas for prayer points") },
+    { label: "Summarize Article", action: () => setInput("Summarize this article/story") },
+    { label: "Suggest Cell Group", action: () => setInput("Suggest a cell group for me to join") },
+    { label: "Bible & Fasting", action: () => setInput("What does the bible say about fasting?") },
+    { label: "Creator FAQs", action: () => setInput("Creator FAQs") },
   ];
 
   return (
