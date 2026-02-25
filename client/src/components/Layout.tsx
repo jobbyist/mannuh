@@ -9,13 +9,16 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import {
-  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home
+  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home, Moon, Sun, Globe, Settings
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
+import AIChatbot from "./AIChatbot";
 
 const navItems = [
   { href: "/groups", label: "Cell Groups", icon: Users },
@@ -23,10 +26,21 @@ const navItems = [
   { href: "/discover", label: "Discover", icon: Compass },
 ];
 
+const languages = [
+  { code: "en", name: "English" },
+  { code: "es", name: "Español" },
+  { code: "fr", name: "Français" },
+  { code: "de", name: "Deutsch" },
+  { code: "pt", name: "Português" },
+  { code: "zh", name: "中文" },
+];
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [currentLanguage, setCurrentLanguage] = useState("en");
 
   const unreadQuery = trpc.notifications.unreadCount.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -70,6 +84,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             {/* Right side */}
             <div className="flex items-center gap-2">
+              {/* Language Picker */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                    <Globe className="w-5 h-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40">
+                  <DropdownMenuLabel className="text-xs">Language</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {languages.map((lang) => (
+                    <DropdownMenuItem
+                      key={lang.code}
+                      onClick={() => setCurrentLanguage(lang.code)}
+                      className={currentLanguage === lang.code ? "bg-muted" : ""}
+                    >
+                      {lang.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              >
+                {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+              </button>
+
               <Link href="/search">
                 <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                   <Search className="w-5 h-5" />
@@ -106,6 +150,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <Link href={`/profile/${user?.id}`} className="flex items-center gap-2">
                         <User className="w-4 h-4" />
                         My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center gap-2">
+                        <Settings className="w-4 h-4" />
+                        Settings
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -161,6 +211,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <main className="min-h-[calc(100vh-4rem)]">
         {children}
       </main>
+
+      {/* AI Chatbot */}
+      <AIChatbot />
     </div>
   );
 }
