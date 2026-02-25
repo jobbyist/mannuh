@@ -3,10 +3,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Crown, X } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export default function FoundingMembersModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [location] = useLocation();
 
   useEffect(() => {
     // Check if user has already seen the modal in this session
@@ -22,6 +23,13 @@ export default function FoundingMembersModal() {
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Hide modal when navigating to founding members page
+  useEffect(() => {
+    if (location === "/founding-members") {
+      setIsOpen(false);
+    }
+  }, [location]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -61,7 +69,7 @@ export default function FoundingMembersModal() {
           <div className="bg-muted/50 rounded-lg p-6 space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-muted-foreground">Annual Contribution</span>
-              <span className="text-xl font-black text-primary">$250</span>
+              <span className="text-xl font-black text-primary">$100</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-muted-foreground">Launch Date</span>

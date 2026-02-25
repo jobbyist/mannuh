@@ -37,6 +37,7 @@ const communityLinks = [
   { label: "Mannuh for Kids", href: "/kids" },
   { label: "Founding Members", href: "/founding-members" },
   { label: "Help Center", href: "/help" },
+  { label: "Advertise With Us", href: "/ads" },
   { label: "Support A Cause", href: "/support" },
   { label: "Business Solutions", href: "/business" },
   { label: "Partner Program", href: "/partner" },

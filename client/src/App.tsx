@@ -15,6 +15,7 @@ import Merchandise from "./pages/Merchandise";
 import Shop from "./pages/Shop";
 import HelpCenter from "./pages/HelpCenter";
 import FoundingMembers from "./pages/FoundingMembers";
+import AdvertiseWithUs from "./pages/AdvertiseWithUs";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import Notifications from "./pages/Notifications";
@@ -54,6 +55,7 @@ function Router() {
       <Route path="/churches" component={() => <Layout><Churches /></Layout>} />
       <Route path="/merchandise" component={Merchandise} />
       <Route path="/shop" component={Shop} />
+      <Route path="/ads" component={AdvertiseWithUs} />
       <Route path="/help" component={HelpCenter} />
       <Route path="/founding-members" component={FoundingMembers} />
       <Route path="/profile/:id">{(params) => <Layout><Profile userId={Number(params.id)} /></Layout>}</Route>

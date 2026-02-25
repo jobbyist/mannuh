@@ -13,7 +13,7 @@ export default function SponsoredBanner({ variant = "horizontal" }: SponsoredBan
     description: "Reach thousands of believers in our growing community",
     imageUrl: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=400&fit=crop",
     buttonText: "Learn More About Advertising",
-    link: "/sponsor",
+    link: "/ads",
   };
 
   if (variant === "vertical") {
