@@ -33,6 +33,7 @@ const moreNavItems = [
   { href: "/events", label: "Events", icon: Award },
   { href: "/churches", label: "Church Directory", icon: Users },
   { href: "/wordly-series", label: "Podcast", icon: Podcast },
+  { href: "/shop", label: "The Mannuh Shop", icon: ShoppingBag },
   { href: "/merchandise", label: "Merchandise", icon: ShoppingBag },
   { href: "/pricing", label: "Pricing", icon: CreditCard },
   { href: "/kids", label: "Mannuh for Kids", icon: Baby },

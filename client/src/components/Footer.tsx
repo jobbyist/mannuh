@@ -389,6 +389,193 @@ Monday - Friday: 9:00 AM - 5:00 PM (EST)
 
 *mannuh is a faith-based community platform dedicated to connecting believers worldwide through cell groups, content creation, and shared fellowship.*
     `
+  },
+  guidelines: {
+    title: "Community Guidelines",
+    content: `
+# Community Guidelines
+
+**Last Updated:** February 25, 2026
+
+Welcome to mannuh! Our community is built on faith, respect, and mutual support. These guidelines ensure that mannuh remains a safe, welcoming space for all believers to connect, share, and grow together.
+
+## Core Principles
+
+### 1. Faith-Centered Interaction
+- All interactions should reflect Christian values of love, kindness, and respect
+- Content should be edifying and encourage spiritual growth
+- Disagreements should be handled with grace and understanding
+
+### 2. Respectful Communication
+When interacting with other users, we expect:
+- **Respectful dialogue** - Treat others as you would like to be treated
+- **Constructive feedback** - Offer criticism in love and with the intent to help
+- **Active listening** - Seek to understand before being understood
+- **Encouragement** - Build up fellow believers in their faith journey
+
+### 3. Zero Tolerance Policy
+
+mannuh has **zero tolerance** for:
+
+#### Abusive Language or Behavior
+- Harassment, bullying, or intimidation of any kind
+- Hate speech, discrimination, or prejudice based on race, ethnicity, gender, age, disability, or any other protected characteristic
+- Threats of violence or harm
+- Sexual harassment or inappropriate advances
+- Personal attacks or defamatory statements
+
+**Consequences:** First offense may result in a warning. Repeated offenses will result in permanent account suspension.
+
+#### Unpleasant or Harmful Content
+- Explicit or graphic content (sexual, violent, or disturbing)
+- Content promoting self-harm or dangerous activities
+- Spam, phishing, or fraudulent content
+- Misinformation or deliberately false teachings
+- Content that glorifies sin or encourages unbiblical behavior
+
+**Consequences:** Immediate content removal. Repeated violations will result in account restrictions or termination.
+
+### 4. Content Creation & Sharing
+
+#### For All Users
+- Share content that aligns with Christian values and teachings
+- Verify facts before sharing information or teachings
+- Give proper attribution when sharing others' work
+- Report content that violates these guidelines
+
+#### For Creator Partners (Premium Subscribers)
+In addition to the above, creators must:
+
+##### Copyright & Intellectual Property
+**Strict compliance required:**
+
+- **Original Content Only** - Share only content you have created or have explicit rights to use
+- **No Unauthorized Distribution** - Do not upload, share, or distribute copyrighted or plagiarized content from other platforms without proper authorization
+- **Obtain Proper Consent** - Before sharing any third-party content (reels, images, videos, music, artwork, writings, etc.), you must obtain:
+  - **Written consent** (e.g., licensing agreement, email permission, signed contract)
+  - **Verbal consent** with documented proof (e.g., recorded conversation, witnessed agreement)
+  - **Other legally admissible consent** as required by applicable local, national, and international copyright laws
+
+##### What Requires Permission:
+- Video clips or reels from social media (Instagram, TikTok, YouTube, etc.)
+- Images or photographs taken by others
+- Music, sound recordings, or audio clips
+- Artwork, graphics, or designs
+- Written content (articles, quotes longer than fair use, books, etc.)
+- Any derivative works based on another's intellectual property
+
+##### Fair Use Exceptions:
+Limited use may be acceptable under fair use doctrine for:
+- Commentary or criticism with proper attribution
+- Educational purposes with limited excerpts
+- News reporting
+- Transformative works that add substantial new meaning
+
+**Note:** Fair use is determined on a case-by-case basis. When in doubt, obtain permission or create original content.
+
+##### Consequences for IP Violations:
+- **First Offense:** Content removal + 30-day creator privileges suspension + mandatory copyright training
+- **Second Offense:** Content removal + 90-day creator privileges suspension + final warning
+- **Third Offense:** Permanent removal from Creator Partner Program + possible account termination
+- **Legal Action:** IP owners may pursue legal remedies. mannuh will cooperate fully with copyright holders and legal authorities.
+
+### 5. Privacy & Safety
+- Protect your personal information
+- Do not share others' private information without consent
+- Report suspicious behavior or safety concerns immediately
+- Be cautious about meeting online contacts in person
+
+### 6. Platform Integrity
+- Do not create multiple accounts to circumvent bans or restrictions
+- Do not manipulate engagement metrics (fake likes, follows, comments)
+- Do not attempt to access others' accounts or system vulnerabilities
+- Do not use automation or bots to interact with the platform
+
+## Reporting Violations
+
+If you encounter content or behavior that violates these guidelines:
+
+1. **Report the content** - Use the report button on posts, comments, or profiles
+2. **Block the user** - If you feel unsafe or uncomfortable
+3. **Contact support** - For serious concerns: support@mannuh.space
+
+### What to Include in Reports:
+- Link to the content or profile
+- Description of the violation
+- Screenshots or evidence (if applicable)
+- Any relevant context
+
+We review all reports within 24-48 hours and take appropriate action.
+
+## Appeals Process
+
+If your content is removed or your account is restricted:
+
+1. **Review the decision** - Check the notification for specific violations
+2. **Submit an appeal** - Email support@mannuh.space with:
+   - Your account information
+   - The content in question
+   - Why you believe the decision should be reconsidered
+3. **Wait for response** - Appeals are typically reviewed within 5-7 business days
+
+## Content Moderation
+
+Our moderation team:
+- Reviews reported content and accounts
+- Makes decisions based on these guidelines
+- Applies consequences consistently and fairly
+- Continuously works to improve platform safety
+
+### Moderation Actions May Include:
+- Content removal
+- Warning notifications
+- Temporary account restrictions
+- Suspension of creator privileges
+- Permanent account termination
+
+## Supporting Resources
+
+### Need Help?
+- **Technical Support:** support@mannuh.space
+- **Report Abuse:** Report button on content or support@mannuh.space
+- **Mental Health Crisis:** Contact local emergency services or crisis helpline
+- **Legal Concerns:** legal@mannuh.space
+
+### Community Resources:
+- Help Center: mannuh.space/help
+- Creator Guidelines: mannuh.space/creator-guidelines
+- Copyright FAQ: mannuh.space/copyright
+- Safety Tips: mannuh.space/safety
+
+## Our Commitment
+
+mannuh is committed to:
+- **Safety** - Providing a secure environment for all users
+- **Integrity** - Enforcing guidelines consistently and transparently
+- **Growth** - Supporting spiritual development and community building
+- **Excellence** - Continuously improving our platform and policies
+
+## Updates to Guidelines
+
+We may update these guidelines periodically to address new challenges or improve clarity. Significant changes will be announced through:
+- Email notification to all users
+- In-app announcements
+- Posts on our social media channels
+
+Continued use of mannuh after changes constitutes acceptance of updated guidelines.
+
+## Final Note
+
+These guidelines exist to protect our community and honor God through our interactions. By using mannuh, you agree to uphold these standards and help create a positive, faith-filled environment for all.
+
+**Questions?** Contact us at support@mannuh.space
+
+---
+
+**A Gravitas Industries Initiative. All Rights Reserved.**
+
+*"Let your conversation be always full of grace, seasoned with salt, so that you may know how to answer everyone." - Colossians 4:6*
+    `
   }
 };
 
@@ -493,6 +680,14 @@ export default function Footer() {
                     className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
                   >
                     Refund Policy
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => setOpenPolicy("guidelines")}
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
+                  >
+                    Community Guidelines
                   </button>
                 </li>
                 <li>

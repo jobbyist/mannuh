@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
@@ -12,6 +12,7 @@ import Reels from "./pages/Reels";
 import Discover from "./pages/Discover";
 import Browse from "./pages/Browse";
 import Merchandise from "./pages/Merchandise";
+import Shop from "./pages/Shop";
 import HelpCenter from "./pages/HelpCenter";
 import FoundingMembers from "./pages/FoundingMembers";
 import Profile from "./pages/Profile";
@@ -28,8 +29,17 @@ import Layout from "./components/Layout";
 import CookieBanner from "./components/CookieBanner";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
 import FoundingMembersModal from "./components/FoundingMembersModal";
+import Timeout from "./pages/Timeout";
+import { useEffect } from "react";
 
 function Router() {
+  const [location] = useLocation();
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [location]);
+
   return (
     <Switch>
       <Route path="/" component={Home} />
@@ -43,6 +53,7 @@ function Router() {
       <Route path="/events" component={() => <Layout><Events /></Layout>} />
       <Route path="/churches" component={() => <Layout><Churches /></Layout>} />
       <Route path="/merchandise" component={Merchandise} />
+      <Route path="/shop" component={Shop} />
       <Route path="/help" component={HelpCenter} />
       <Route path="/founding-members" component={FoundingMembers} />
       <Route path="/profile/:id">{(params) => <Layout><Profile userId={Number(params.id)} /></Layout>}</Route>
@@ -52,6 +63,7 @@ function Router() {
       <Route path="/pricing" component={Pricing} />
       <Route path="/kids" component={MannuhForKids} />
       <Route path="/settings" component={Settings} />
+      <Route path="/timeout" component={Timeout} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
