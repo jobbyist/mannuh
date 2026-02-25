@@ -52,8 +52,8 @@ export default function Events() {
 
   return (
     <div className="container py-20">
-        {/* Hero Section */}
-        <motion.div
+      {/* Hero Section */}
+      <motion.div
           className="max-w-3xl mx-auto text-center mb-16"
           initial="hidden"
           animate="visible"
@@ -79,183 +79,182 @@ export default function Events() {
           )}
         </motion.div>
 
-        {/* Events Grid */}
-        <div className="grid gap-6 md:grid-cols-2 max-w-6xl mx-auto">
-          {events.map((event, index) => (
-            <motion.div
-              key={event.id}
-              initial="hidden"
-              animate="visible"
-              variants={fadeUp}
-              custom={index + 1}
-            >
-              <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-[oklch(0.82_0.06_240_/_0.5)] overflow-hidden">
-                {/* Event Image */}
-                {event.imageUrl && (
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={event.imageUrl}
-                      alt={event.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                    
-                    {/* Event Type Badge */}
-                    <div className="absolute top-3 left-3">
-                      <Badge className={getEventTypeColor(event.eventType)}>
-                        {getEventTypeIcon(event.eventType)}
-                        <span className="ml-1 capitalize">{event.eventType}</span>
+      {/* Events Grid */}
+      <div className="grid gap-6 md:grid-cols-2 max-w-6xl mx-auto">
+        {events.map((event, index) => (
+          <motion.div
+            key={event.id}
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            custom={index + 1}
+          >
+            <Card className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-[oklch(0.82_0.06_240_/_0.5)] overflow-hidden">
+              {/* Event Image */}
+              {event.imageUrl && (
+                <div className="relative h-48 overflow-hidden">
+                  <img
+                    src={event.imageUrl}
+                    alt={event.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  
+                  {/* Event Type Badge */}
+                  <div className="absolute top-3 left-3">
+                    <Badge className={getEventTypeColor(event.eventType)}>
+                      {getEventTypeIcon(event.eventType)}
+                      <span className="ml-1 capitalize">{event.eventType}</span>
+                    </Badge>
+                  </div>
+
+                  {/* Verified Badge */}
+                  {event.isVerified && (
+                    <div className="absolute top-3 right-3">
+                      <Badge className="bg-white/90 text-foreground">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        Verified
                       </Badge>
                     </div>
+                  )}
+                </div>
+              )}
 
-                    {/* Verified Badge */}
-                    {event.isVerified && (
-                      <div className="absolute top-3 right-3">
-                        <Badge className="bg-white/90 text-foreground">
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          Verified
-                        </Badge>
-                      </div>
-                    )}
-                  </div>
+              <CardContent className="p-6">
+                {/* Category */}
+                {event.category && (
+                  <Badge variant="outline" className="mb-3 capitalize">
+                    {event.category.replace("-", " ")}
+                  </Badge>
                 )}
 
-                <CardContent className="p-6">
-                  {/* Category */}
-                  {event.category && (
-                    <Badge variant="outline" className="mb-3 capitalize">
-                      {event.category.replace("-", " ")}
-                    </Badge>
+                {/* Title */}
+                <h3 className="text-xl font-bold mb-2 group-hover:text-[oklch(0.82_0.06_240)] transition-colors">
+                  {event.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                  {event.description}
+                </p>
+
+                {/* Event Details */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Calendar className="w-4 h-4 flex-shrink-0" />
+                    <span>{format(new Date(event.startTime), "EEEE, MMMM d, yyyy")}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4 flex-shrink-0" />
+                    <span>
+                      {format(new Date(event.startTime), "h:mm a")} - {format(new Date(event.endTime), "h:mm a")}
+                      {event.timezone && ` (${event.timezone})`}
+                    </span>
+                  </div>
+                  {event.eventType !== "online" && event.location && (
+                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span className="line-clamp-1">{event.location}</span>
+                    </div>
                   )}
-
-                  {/* Title */}
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-[oklch(0.82_0.06_240)] transition-colors">
-                    {event.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                    {event.description}
-                  </p>
-
-                  {/* Event Details */}
-                  <div className="space-y-2 mb-4">
+                  {event.maxAttendees && (
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="w-4 h-4 flex-shrink-0" />
-                      <span>{format(new Date(event.startTime), "EEEE, MMMM d, yyyy")}</span>
+                      <Users className="w-4 h-4 flex-shrink-0" />
+                      <span>Max {event.maxAttendees} attendees</span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4 flex-shrink-0" />
-                      <span>
-                        {format(new Date(event.startTime), "h:mm a")} - {format(new Date(event.endTime), "h:mm a")}
-                        {event.timezone && ` (${event.timezone})`}
-                      </span>
+                  )}
+                  {event.isPaid && event.ticketPrice && (
+                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <DollarSign className="w-4 h-4 flex-shrink-0" />
+                      <span>${(event.ticketPrice / 100).toFixed(2)} per ticket</span>
                     </div>
-                    {event.eventType !== "online" && event.location && (
-                      <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                        <span className="line-clamp-1">{event.location}</span>
-                      </div>
-                    )}
-                    {event.maxAttendees && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Users className="w-4 h-4 flex-shrink-0" />
-                        <span>Max {event.maxAttendees} attendees</span>
-                      </div>
-                    )}
-                    {event.isPaid && event.ticketPrice && (
-                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                        <DollarSign className="w-4 h-4 flex-shrink-0" />
-                        <span>${(event.ticketPrice / 100).toFixed(2)} per ticket</span>
-                      </div>
-                    )}
-                  </div>
+                  )}
+                </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-3">
-                    {!isAuthenticated ? (
-                      <Link href="/pricing" className="flex-1">
-                        <Button className="w-full bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
-                          Sign Up to Register
-                        </Button>
-                      </Link>
-                    ) : (
-                      <>
-                        <Button className="flex-1 bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
-                          {event.isPaid ? "Buy Ticket" : "Register"}
-                        </Button>
-                        <Button variant="outline" size="icon">
-                          <Calendar className="w-4 h-4" />
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {events.length === 0 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-            custom={1}
-            className="text-center py-12"
-          >
-            <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-xl font-semibold mb-2">No Events Yet</h3>
-            <p className="text-muted-foreground">Check back soon for upcoming events!</p>
-          </motion.div>
-        )}
-
-        {/* Create Event CTA for Premium */}
-        {isAuthenticated && userIsPremium && events.length > 0 && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-            custom={events.length + 1}
-            className="mt-16 max-w-2xl mx-auto"
-          >
-            <Card className="p-8 text-center bg-gradient-to-br from-[oklch(0.82_0.06_240_/_0.05)] to-[oklch(0.88_0.05_330_/_0.05)] border-2 border-[oklch(0.82_0.06_240_/_0.2)]">
-              <Plus className="w-12 h-12 mx-auto mb-4 text-[oklch(0.82_0.06_240)]" />
-              <h3 className="text-2xl font-bold mb-2">Host Your Own Event</h3>
-              <p className="text-muted-foreground mb-6">
-                As a Premium member, you can create and host events for the community
-              </p>
-              <Button size="lg" className="bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
-                Create Event
-              </Button>
+                {/* Action Buttons */}
+                <div className="flex gap-3">
+                  {!isAuthenticated ? (
+                    <Link href="/pricing" className="flex-1">
+                      <Button className="w-full bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
+                        Sign Up to Register
+                      </Button>
+                    </Link>
+                  ) : (
+                    <>
+                      <Button className="flex-1 bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
+                        {event.isPaid ? "Buy Ticket" : "Register"}
+                      </Button>
+                      <Button variant="outline" size="icon">
+                        <Calendar className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </CardContent>
             </Card>
           </motion.div>
-        )}
-
-        {/* Premium CTA for Non-Premium */}
-        {isAuthenticated && !userIsPremium && (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeUp}
-            custom={events.length + 1}
-            className="mt-16 max-w-2xl mx-auto"
-          >
-            <Card className="p-8 text-center bg-gradient-to-br from-[oklch(0.82_0.06_240_/_0.05)] to-[oklch(0.88_0.05_330_/_0.05)] border-2 border-[oklch(0.82_0.06_240_/_0.2)]">
-              <h3 className="text-2xl font-bold mb-2">Want to Create Events?</h3>
-              <p className="text-muted-foreground mb-6">
-                Upgrade to Premium to host your own events and connect with the community
-              </p>
-              <Link href="/pricing">
-                <Button size="lg" className="bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
-                  Upgrade to Premium
-                </Button>
-              </Link>
-            </Card>
-          </motion.div>
-        )}
+                  ))}
       </div>
+
+      {/* Empty State */}
+      {events.length === 0 && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          custom={1}
+          className="text-center py-12"
+        >
+          <Calendar className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
+          <h3 className="text-xl font-semibold mb-2">No Events Yet</h3>
+          <p className="text-muted-foreground">Check back soon for upcoming events!</p>
+        </motion.div>
+      )}
+
+      {/* Create Event CTA for Premium */}
+      {isAuthenticated && userIsPremium && events.length > 0 && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          custom={events.length + 1}
+          className="mt-16 max-w-2xl mx-auto"
+        >
+          <Card className="p-8 text-center bg-gradient-to-br from-[oklch(0.82_0.06_240_/_0.05)] to-[oklch(0.88_0.05_330_/_0.05)] border-2 border-[oklch(0.82_0.06_240_/_0.2)]">
+            <Plus className="w-12 h-12 mx-auto mb-4 text-[oklch(0.82_0.06_240)]" />
+            <h3 className="text-2xl font-bold mb-2">Host Your Own Event</h3>
+            <p className="text-muted-foreground mb-6">
+              As a Premium member, you can create and host events for the community
+            </p>
+            <Button size="lg" className="bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
+              Create Event
+            </Button>
+          </Card>
+        </motion.div>
+      )}
+
+      {/* Premium CTA for Non-Premium */}
+      {isAuthenticated && !userIsPremium && (
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          custom={events.length + 1}
+          className="mt-16 max-w-2xl mx-auto"
+        >
+          <Card className="p-8 text-center bg-gradient-to-br from-[oklch(0.82_0.06_240_/_0.05)] to-[oklch(0.88_0.05_330_/_0.05)] border-2 border-[oklch(0.82_0.06_240_/_0.2)]">
+            <h3 className="text-2xl font-bold mb-2">Want to Create Events?</h3>
+            <p className="text-muted-foreground mb-6">
+              Upgrade to Premium to host your own events and connect with the community
+            </p>
+            <Link href="/pricing">
+              <Button size="lg" className="bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90">
+                Upgrade to Premium
+              </Button>
+            </Link>
+          </Card>
+        </motion.div>
+      )}
     </div>
   );
 }
