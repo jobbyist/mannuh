@@ -13,12 +13,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import {
-  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home, Moon, Sun, Globe, Settings,
+  Users, Play, Compass, Search, Bell, LogOut, User, Menu, X, Home, Globe, Settings,
   BookOpen, ShoppingBag, CreditCard, HelpCircle, Baby, Award, Podcast, MoreHorizontal
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
-import { useTheme } from "@/contexts/ThemeContext";
 import AIChatbot from "./AIChatbot";
 
 const navItems = [
@@ -54,7 +53,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
   const [currentLanguage, setCurrentLanguage] = useState("en");
 
   const unreadQuery = trpc.notifications.unreadCount.useQuery(undefined, {
@@ -140,14 +138,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   ))}
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              {/* Theme Toggle */}
-              <button
-                onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-              </button>
 
               <Link href="/search">
                 <button className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
