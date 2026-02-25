@@ -634,7 +634,6 @@ type LegalPolicy = keyof typeof legalPolicies;
 
 export default function Footer() {
   const [openPolicy, setOpenPolicy] = useState<LegalPolicy | null>(null);
-  const [showAppStoreModal, setShowAppStoreModal] = useState(false);
   const { t } = useTranslation();
 
   return (
@@ -729,8 +728,10 @@ export default function Footer() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <button 
-                  onClick={() => setShowAppStoreModal(true)}
+                <a 
+                  href="https://play.google.com/store" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -740,9 +741,11 @@ export default function Footer() {
                     <div className="text-[10px] opacity-80">GET IT ON</div>
                     <div className="text-xs font-semibold leading-tight">Google Play</div>
                   </div>
-                </button>
-                <button 
-                  onClick={() => setShowAppStoreModal(true)}
+                </a>
+                <a 
+                  href="https://apps.apple.com" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-2 px-4 py-2 bg-foreground hover:bg-foreground/90 rounded-lg text-white text-xs font-medium transition-colors"
                 >
                   <Apple className="w-5 h-5" />
@@ -750,7 +753,7 @@ export default function Footer() {
                     <div className="text-[10px] opacity-80">Download on the</div>
                     <div className="text-xs font-semibold leading-tight">App Store</div>
                   </div>
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -824,56 +827,6 @@ export default function Footer() {
               </div>
             </>
           )}
-        </DialogContent>
-      </Dialog>
-
-      {/* App Store Coming Soon Modal */}
-      <Dialog open={showAppStoreModal} onOpenChange={setShowAppStoreModal}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center mb-2">
-              Coming Soon
-            </DialogTitle>
-            <DialogDescription className="text-center space-y-4 pt-4">
-              <div className="space-y-3">
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
-                    </svg>
-                    <span className="font-semibold">Android App</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Official launch date: <strong>June 2026</strong>
-                  </p>
-                </div>
-
-                <div className="p-4 bg-muted/50 rounded-lg">
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Apple className="w-6 h-6" />
-                    <span className="font-semibold">iOS App</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    Estimated launch: <strong>Q4 2026</strong> (October 1 - December 1, 2026)
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t">
-                <p className="text-sm mb-4">
-                  Be part of connecting believers of Christ by making our faith-based platform as accessible as possible to everyone across the world through the power of community and investing in an honorable cause that directly contributes to charitable causes.
-                </p>
-                <Link href="/founding-members">
-                  <Button 
-                    className="w-full bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] hover:opacity-90"
-                    onClick={() => setShowAppStoreModal(false)}
-                  >
-                    Get Involved
-                  </Button>
-                </Link>
-              </div>
-            </DialogDescription>
-          </DialogHeader>
         </DialogContent>
       </Dialog>
     </>

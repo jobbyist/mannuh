@@ -1,6 +1,0 @@
-This is a placeholder for mannuhstoryplaceholder.png
-The actual image should be added by the repository owner at:
-/home/runner/work/mannuh/mannuh/client/public/mannuhstoryplaceholder.png
-
-The image should be in portrait orientation (9:16 aspect ratio recommended for story format)
-Suggested dimensions: 1080x1920 pixels
