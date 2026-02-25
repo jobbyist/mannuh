@@ -8,6 +8,10 @@ import { Users, Play, Compass, ArrowRight, Heart, BookOpen, ChevronRight, Extern
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import { trpc } from "@/lib/trpc";
+import Footer from "@/components/Footer";
+import LogoReel from "@/components/LogoReel";
+import Preloader from "@/components/Preloader";
+import { useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -20,6 +24,16 @@ const fadeUp = {
 
 export default function Home() {
   const { isAuthenticated } = useAuth();
+  const [showPreloader, setShowPreloader] = useState(() => {
+    // Show preloader only on first visit
+    const hasVisited = sessionStorage.getItem('mannuh_visited');
+    return !hasVisited;
+  });
+
+  const handlePreloaderComplete = () => {
+    sessionStorage.setItem('mannuh_visited', 'true');
+    setShowPreloader(false);
+  };
 
   // Fetch featured discover content (5 items)
   const featuredContentQuery = trpc.discover.content.useQuery({
@@ -47,6 +61,10 @@ export default function Home() {
       publishedAt: "2026-02-16",
     },
   ];
+
+  if (showPreloader) {
+    return <Preloader onComplete={handlePreloaderComplete} />;
+  }
 
   return (
     <Layout>
@@ -131,6 +149,9 @@ export default function Home() {
             </motion.div>
           </div>
         </section>
+
+        {/* Logo Reel - Partners Section */}
+        <LogoReel />
 
         {/* Features Section */}
         <section className="container pb-28">
@@ -456,21 +477,7 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-border/50 bg-white">
-          <div className="container py-10">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-primary flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-xs">m</span>
-                </div>
-                <span className="font-bold text-lg tracking-tight">mannuh</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                A community for believers, by believers.
-              </p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </Layout>
   );

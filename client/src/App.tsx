@@ -14,7 +14,10 @@ import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import Notifications from "./pages/Notifications";
 import WordlySeries from "./pages/WordlySeries";
+import Pricing from "./pages/Pricing";
+import MannuhForKids from "./pages/MannuhForKids";
 import Layout from "./components/Layout";
+import CookieBanner from "./components/CookieBanner";
 
 function Router() {
   return (
@@ -29,6 +32,8 @@ function Router() {
       <Route path="/search" component={() => <Layout><Search /></Layout>} />
       <Route path="/notifications" component={() => <Layout><Notifications /></Layout>} />
       <Route path="/wordly-series" component={WordlySeries} />
+      <Route path="/pricing" component={Pricing} />
+      <Route path="/kids" component={MannuhForKids} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
@@ -42,6 +47,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Router />
+          <CookieBanner />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
