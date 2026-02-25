@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, MapPin, Phone, Mail, Globe, CheckCircle, Flag } from "lucide-react";
+import { Search, MapPin, Phone, Mail, Globe, CheckCircle, Flag, Star, Heart, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import { trpc } from "@/lib/trpc";
@@ -29,6 +29,47 @@ const fadeUp = {
     y: 0,
     transition: { delay: i * 0.05, duration: 0.6 },
   }),
+};
+
+// Featured church/ministry for March 2026
+const featuredMinistry = {
+  id: "featured-tgc",
+  name: "The Gospel Coalition",
+  description: "The Gospel Coalition exists to equip the next generation of believers, pastors, and church leaders to shape life and ministry around the gospel.",
+  logoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+  denomination: "Interdenominational",
+  website: "https://thegospelcoalition.org",
+  donationUrl: "https://thegospelcoalition.org/donate-today",
+  donationName: "The TGC Collective",
+  rating: 4.9,
+  isFeatured: true,
+  country: "United States",
+  featuredMonth: "March 2026"
+};
+
+// Locations for LDS Church
+const ldsLocations = [
+  { country: "United States", city: "Salt Lake City, UT", website: "https://www.churchofjesuschrist.org" },
+  { country: "United States", city: "Provo, UT", website: "https://www.churchofjesuschrist.org" },
+  { country: "United Kingdom", city: "London", website: "https://www.churchofjesuschrist.org" },
+  { country: "Australia", city: "Sydney", website: "https://www.churchofjesuschrist.org" },
+  { country: "Canada", city: "Toronto", website: "https://www.churchofjesuschrist.org" },
+  { country: "Mexico", city: "Mexico City", website: "https://www.churchofjesuschrist.org" },
+  { country: "Brazil", city: "São Paulo", website: "https://www.churchofjesuschrist.org" },
+  { country: "Philippines", city: "Manila", website: "https://www.churchofjesuschrist.org" },
+  { country: "Japan", city: "Tokyo", website: "https://www.churchofjesuschrist.org" },
+  { country: "South Africa", city: "Johannesburg", website: "https://www.churchofjesuschrist.org" }
+];
+
+const ldsChurch = {
+  id: "lds-church",
+  name: "The Church of Jesus Christ of Latter-day Saints",
+  description: "A worldwide faith of over 16 million members centered on the belief that everyone on earth is a son or daughter of a loving God and that His Son, Jesus Christ, saved the world from sin and death.",
+  logoUrl: "https://images.unsplash.com/photo-1438232992991-995b7058bbb3?w=400&h=400&fit=crop",
+  denomination: "Mormon",
+  website: "https://www.churchofjesuschrist.org",
+  isVerified: true,
+  locations: ldsLocations
 };
 
 export default function Churches() {
@@ -44,7 +85,8 @@ export default function Churches() {
     limit: 100,
   });
 
-  const churches = churchesQuery.data || [];
+  // Combine LDS church with database churches
+  const churches = [ldsChurch, ...(churchesQuery.data || [])];
 
   return (
     <Layout>
@@ -112,11 +154,124 @@ export default function Churches() {
                   <SelectItem value="Baptist">Baptist</SelectItem>
                   <SelectItem value="Anglican">Anglican</SelectItem>
                   <SelectItem value="Presbyterian">Presbyterian</SelectItem>
+                  <SelectItem value="Mormon">Mormon</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </Card>
         </motion.div>
+
+        {/* Featured Ministry - March 2026 Spotlight */}
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          custom={2}
+          className="max-w-7xl mx-auto mb-12"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+            <h2 className="text-2xl font-bold">Featured Ministry - March 2026</h2>
+          </div>
+          
+          <Card 
+            className="group cursor-pointer hover:shadow-2xl transition-all duration-300 border-4 border-gradient bg-gradient-to-br from-yellow-50 to-amber-50"
+            onClick={() => setSelectedChurch(featuredMinistry)}
+          >
+            <CardContent className="p-8">
+              <div className="grid md:grid-cols-3 gap-8">
+                {/* Logo */}
+                <div className="relative">
+                  <div className="aspect-square rounded-xl overflow-hidden border-4 border-yellow-400/50 shadow-lg">
+                    <img
+                      src={featuredMinistry.logoUrl}
+                      alt={featuredMinistry.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                  <div className="absolute -top-3 -right-3">
+                    <Badge className="bg-gradient-to-r from-yellow-500 to-amber-500 text-white border-none text-sm px-4 py-2 shadow-lg">
+                      <Star className="w-4 h-4 mr-1 fill-white" />
+                      Spotlight
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="md:col-span-2 space-y-4">
+                  <div>
+                    <h3 className="text-3xl font-black text-foreground mb-2 group-hover:text-[oklch(0.82_0.06_240)] transition-colors">
+                      {featuredMinistry.name}
+                    </h3>
+                    <Badge variant="outline" className="mb-3">{featuredMinistry.denomination}</Badge>
+                    
+                    {/* Rating */}
+                    <div className="flex items-center gap-2 mb-3">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-5 h-5 ${
+                            star <= Math.floor(featuredMinistry.rating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : star - 0.5 <= featuredMinistry.rating
+                              ? "fill-yellow-400 text-yellow-400 opacity-50"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                      <span className="text-lg font-semibold ml-2">{featuredMinistry.rating}/5</span>
+                    </div>
+                  </div>
+
+                  <p className="text-muted-foreground text-lg leading-relaxed">
+                    {featuredMinistry.description}
+                  </p>
+
+                  <div className="flex flex-wrap gap-3 pt-2">
+                    <Button 
+                      asChild
+                      onClick={(e) => e.stopPropagation()}
+                      className="bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)]"
+                    >
+                      <a 
+                        href={featuredMinistry.website} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <Globe className="w-4 h-4" />
+                        Visit Website
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </Button>
+                    <Button 
+                      asChild
+                      variant="outline"
+                      onClick={(e) => e.stopPropagation()}
+                      className="border-2 border-[oklch(0.82_0.06_240)] text-[oklch(0.82_0.06_240)] hover:bg-[oklch(0.82_0.06_240)] hover:text-white"
+                    >
+                      <a 
+                        href={featuredMinistry.donationUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2"
+                      >
+                        <Heart className="w-4 h-4" />
+                        {featuredMinistry.donationName}
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* All Churches Grid */}
+        <div className="max-w-7xl mx-auto mb-8">
+          <h2 className="text-2xl font-bold mb-4">All Churches & Ministries</h2>
+        </div>
 
         {/* Churches Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-7xl mx-auto">
@@ -242,7 +397,7 @@ export default function Churches() {
                   </div>
                 )}
 
-                {selectedChurch.denomination && (
+                 {selectedChurch.denomination && (
                   <div className="mb-4">
                     <Badge variant="outline" className="text-sm">
                       {selectedChurch.denomination}
@@ -250,10 +405,66 @@ export default function Churches() {
                   </div>
                 )}
 
+                {/* Rating for Featured Ministry */}
+                {selectedChurch.isFeatured && selectedChurch.rating && (
+                  <div className="mb-6">
+                    <h4 className="font-semibold mb-2">Rating</h4>
+                    <div className="flex items-center gap-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-6 h-6 ${
+                            star <= Math.floor(selectedChurch.rating)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : star - 0.5 <= selectedChurch.rating
+                              ? "fill-yellow-400 text-yellow-400 opacity-50"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                      <span className="text-xl font-semibold ml-2">{selectedChurch.rating}/5</span>
+                    </div>
+                  </div>
+                )}
+
                 {selectedChurch.description && (
                   <div className="mb-6">
                     <h4 className="font-semibold mb-2">About</h4>
                     <p className="text-muted-foreground">{selectedChurch.description}</p>
+                  </div>
+                )}
+
+                {/* Locations Dropdown for LDS Church */}
+                {selectedChurch.locations && selectedChurch.locations.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="font-semibold mb-3">Locations Worldwide</h4>
+                    <div className="max-h-60 overflow-y-auto border rounded-lg">
+                      {selectedChurch.locations.map((location: any, index: number) => (
+                        <div 
+                          key={index}
+                          className="p-4 border-b last:border-b-0 hover:bg-muted/50 transition-colors"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <MapPin className="w-4 h-4 text-muted-foreground" />
+                              <div>
+                                <p className="font-medium">{location.city}</p>
+                                <p className="text-sm text-muted-foreground">{location.country}</p>
+                              </div>
+                            </div>
+                            <a
+                              href={location.website}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-primary hover:underline flex items-center gap-1"
+                            >
+                              Visit
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
@@ -303,14 +514,36 @@ export default function Churches() {
                           href={selectedChurch.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-[oklch(0.82_0.06_240)] hover:underline"
+                          className="text-sm text-[oklch(0.82_0.06_240)] hover:underline flex items-center gap-1"
                         >
                           {selectedChurch.website}
+                          <ExternalLink className="w-3 h-3" />
                         </a>
                       </div>
                     </div>
                   )}
                 </div>
+
+                {/* Donation Button for Featured Ministry */}
+                {selectedChurch.isFeatured && selectedChurch.donationUrl && (
+                  <div className="mt-6">
+                    <Button 
+                      asChild
+                      className="w-full bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)]"
+                    >
+                      <a 
+                        href={selectedChurch.donationUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        <Heart className="w-4 h-4" />
+                        Support {selectedChurch.donationName}
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </Button>
+                  </div>
+                )}
 
                 {!selectedChurch.isVerified && (
                   <div className="mt-6 p-4 rounded-lg bg-gradient-to-r from-[oklch(0.82_0.06_240_/_0.1)] to-[oklch(0.88_0.05_330_/_0.1)] border border-[oklch(0.82_0.06_240_/_0.2)]">

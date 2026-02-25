@@ -407,3 +407,33 @@ export const directMessages = mysqlTable("directMessages", {
 });
 
 export type DirectMessage = typeof directMessages.$inferSelect;
+
+/**
+ * Content Reports for moderation
+ */
+export const contentReports = mysqlTable("contentReports", {
+  id: int("id").autoincrement().primaryKey(),
+  reporterId: int("reporterId").notNull(), // User who reported
+  contentType: mysqlEnum("reportContentType", ["comment", "reel", "article", "post", "user", "group", "event"]).notNull(),
+  contentId: int("contentId").notNull(), // ID of the reported content
+  reason: mysqlEnum("reportReason", [
+    "spam",
+    "harassment",
+    "hate-speech",
+    "inappropriate",
+    "violence",
+    "false-information",
+    "copyright",
+    "other"
+  ]).notNull(),
+  description: text("description"), // Additional details from reporter
+  status: mysqlEnum("reportStatus", ["pending", "reviewing", "resolved", "dismissed"]).default("pending").notNull(),
+  reviewedBy: int("reviewedBy"), // Admin/moderator user ID
+  reviewNotes: text("reviewNotes"), // Internal notes from moderator
+  actionTaken: mysqlEnum("moderationAction", ["none", "warning", "content-removed", "user-suspended", "user-banned"]),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  reviewedAt: timestamp("reviewedAt"),
+});
+
+export type ContentReport = typeof contentReports.$inferSelect;
+export type InsertContentReport = typeof contentReports.$inferInsert;

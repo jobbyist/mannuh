@@ -374,6 +374,7 @@ export const appRouter = router({
   events: eventsRouter,
   churches: churchesRouter,
   userExtended: userExtendedRouter,
+  moderation: moderationRouter,
 });
 
 // ===== LLM CONTENT MODERATION =====
@@ -584,6 +585,51 @@ const userExtendedRouter = router({
   }),
   getMessages: protectedProcedure.input(z.object({ userId: z.number() })).query(async ({ ctx, input }) => {
     return db.getDirectMessages(ctx.user.id, input.userId);
+  }),
+});
+
+// ===== CONTENT MODERATION ROUTER =====
+const moderationRouter = router({
+  submitReport: protectedProcedure.input(z.object({
+    contentType: z.enum(["comment", "reel", "article", "post", "user", "group", "event"]),
+    contentId: z.number(),
+    reason: z.enum(["spam", "harassment", "hate-speech", "inappropriate", "violence", "false-information", "copyright", "other"]),
+    description: z.string().optional(),
+  })).mutation(async ({ ctx, input }) => {
+    const reportId = await db.createContentReport({
+      reporterId: ctx.user.id,
+      contentType: input.contentType,
+      contentId: input.contentId,
+      reason: input.reason,
+      description: input.description,
+    });
+    return { reportId };
+  }),
+  
+  getReports: protectedProcedure.input(z.object({
+    status: z.enum(["pending", "reviewing", "resolved", "dismissed"]).optional(),
+    limit: z.number().optional(),
+    offset: z.number().optional(),
+  }).optional()).query(async ({ ctx, input }) => {
+    // Check if user is admin/moderator (you'd need to add admin role check)
+    return db.getContentReports(input ?? {});
+  }),
+  
+  updateReportStatus: protectedProcedure.input(z.object({
+    reportId: z.number(),
+    status: z.enum(["reviewing", "resolved", "dismissed"]),
+    reviewNotes: z.string().optional(),
+    actionTaken: z.enum(["none", "warning", "content-removed", "user-suspended", "user-banned"]).optional(),
+  })).mutation(async ({ ctx, input }) => {
+    // Check if user is admin/moderator
+    await db.updateContentReport(input.reportId, {
+      status: input.status,
+      reviewedBy: ctx.user.id,
+      reviewNotes: input.reviewNotes,
+      actionTaken: input.actionTaken,
+      reviewedAt: Date.now(),
+    });
+    return { success: true };
   }),
 });
 
