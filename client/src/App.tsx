@@ -10,6 +10,10 @@ import GroupDetail from "./pages/GroupDetail";
 import MeetingRoom from "./pages/MeetingRoom";
 import Reels from "./pages/Reels";
 import Discover from "./pages/Discover";
+import Browse from "./pages/Browse";
+import Merchandise from "./pages/Merchandise";
+import HelpCenter from "./pages/HelpCenter";
+import FoundingMembers from "./pages/FoundingMembers";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import Notifications from "./pages/Notifications";
@@ -20,6 +24,7 @@ import Settings from "./pages/Settings";
 import Layout from "./components/Layout";
 import CookieBanner from "./components/CookieBanner";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
+import FoundingMembersModal from "./components/FoundingMembersModal";
 
 function Router() {
   return (
@@ -30,6 +35,10 @@ function Router() {
       <Route path="/groups/:groupId/meeting/:meetingId">{(params) => <MeetingRoom groupId={Number(params.groupId)} meetingId={Number(params.meetingId)} />}</Route>
       <Route path="/reels" component={() => <Layout><Reels /></Layout>} />
       <Route path="/discover" component={() => <Layout><Discover /></Layout>} />
+      <Route path="/browse" component={() => <Layout><Browse /></Layout>} />
+      <Route path="/merchandise" component={Merchandise} />
+      <Route path="/help" component={HelpCenter} />
+      <Route path="/founding-members" component={FoundingMembers} />
       <Route path="/profile/:id">{(params) => <Layout><Profile userId={Number(params.id)} /></Layout>}</Route>
       <Route path="/search" component={() => <Layout><Search /></Layout>} />
       <Route path="/notifications" component={() => <Layout><Notifications /></Layout>} />
@@ -52,6 +61,7 @@ function App() {
           <Router />
           <CookieBanner />
           <PWAInstallPrompt />
+          <FoundingMembersModal />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
