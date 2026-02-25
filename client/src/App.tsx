@@ -21,6 +21,9 @@ import WordlySeries from "./pages/WordlySeries";
 import Pricing from "./pages/Pricing";
 import MannuhForKids from "./pages/MannuhForKids";
 import Settings from "./pages/Settings";
+import Pathways from "./pages/Pathways";
+import Events from "./pages/Events";
+import Churches from "./pages/Churches";
 import Layout from "./components/Layout";
 import CookieBanner from "./components/CookieBanner";
 import PWAInstallPrompt from "./components/PWAInstallPrompt";
@@ -36,6 +39,9 @@ function Router() {
       <Route path="/reels" component={() => <Layout><Reels /></Layout>} />
       <Route path="/discover" component={() => <Layout><Discover /></Layout>} />
       <Route path="/browse" component={() => <Layout><Browse /></Layout>} />
+      <Route path="/pathways" component={() => <Layout><Pathways /></Layout>} />
+      <Route path="/events" component={() => <Layout><Events /></Layout>} />
+      <Route path="/churches" component={() => <Layout><Churches /></Layout>} />
       <Route path="/merchandise" component={Merchandise} />
       <Route path="/help" component={HelpCenter} />
       <Route path="/founding-members" component={FoundingMembers} />

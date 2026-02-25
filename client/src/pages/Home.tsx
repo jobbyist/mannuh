@@ -42,6 +42,14 @@ export default function Home() {
 
   const featuredContent = featuredContentQuery.data || [];
 
+  // Fetch featured pathways (3 items)
+  const pathwaysQuery = trpc.pathways.list.useQuery({ limit: 3 });
+  const featuredPathways = pathwaysQuery.data || [];
+
+  // Fetch recent articles (3 items)
+  const articlesQuery = trpc.articles.list.useQuery({ limit: 3 });
+  const recentArticles = articlesQuery.data || [];
+
   // Placeholder podcast episodes for homepage (2 most recent)
   const recentPodcasts = [
     {
@@ -203,6 +211,189 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        {/* Guided Pathways Section */}
+        {featuredPathways.length > 0 && (
+          <section className="container pb-28">
+            <motion.div
+              className="mb-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={0}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-2">
+                    Guided <span className="bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] bg-clip-text text-transparent">Pathways</span>
+                  </h2>
+                  <p className="text-muted-foreground font-light">
+                    Structured spiritual journeys to deepen your faith
+                  </p>
+                </div>
+                <Button variant="outline" asChild className="rounded-xl bg-white hidden sm:flex">
+                  <Link href="/pathways">
+                    Browse More <ChevronRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featuredPathways.map((pathway, i) => (
+                <motion.div
+                  key={pathway.id}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  variants={fadeUp}
+                  custom={i}
+                >
+                  <Link href={`/pathways/${pathway.id}`}>
+                    <Card className="hover:shadow-xl transition-all cursor-pointer group h-full border-2 hover:border-[oklch(0.82_0.06_240_/_0.5)]">
+                      <div className="relative h-48 overflow-hidden bg-gradient-to-br from-[oklch(0.82_0.06_240_/_0.1)] to-[oklch(0.88_0.05_330_/_0.1)]">
+                        {pathway.thumbnailUrl ? (
+                          <img
+                            src={pathway.thumbnailUrl}
+                            alt={pathway.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <BookOpen className="w-16 h-16 text-[oklch(0.82_0.06_240)]" />
+                          </div>
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                        <div className="absolute bottom-3 left-3">
+                          <Badge variant="secondary" className="bg-white/90 text-foreground">
+                            {pathway.duration}
+                          </Badge>
+                        </div>
+                      </div>
+                      <CardContent className="p-5">
+                        <h3 className="font-bold text-lg mb-2 group-hover:text-[oklch(0.82_0.06_240)] transition-colors line-clamp-1">
+                          {pathway.title}
+                        </h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {pathway.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="text-center mt-6 sm:hidden">
+              <Button variant="outline" asChild className="rounded-xl bg-white">
+                <Link href="/pathways">
+                  Browse More <ChevronRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            </div>
+          </section>
+        )}
+
+        {/* In Case You Missed It (Articles) Section */}
+        {recentArticles.length > 0 && (
+          <section className="container pb-28">
+            <motion.div
+              className="mb-8"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              custom={0}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground mb-2">
+                    In Case You Missed It
+                  </h2>
+                  <p className="text-muted-foreground font-light">
+                    Recent articles and stories from the mannuh team
+                  </p>
+                </div>
+                <Button variant="outline" asChild className="rounded-xl bg-white hidden sm:flex">
+                  <Link href="/discover">
+                    Read More <ChevronRight className="w-4 h-4 ml-1" />
+                  </Link>
+                </Button>
+              </div>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentArticles.map((article, i) => {
+                let articleTags: string[] = [];
+                try {
+                  articleTags = article.tags ? JSON.parse(article.tags) : [];
+                } catch (e) {
+                  console.warn('Failed to parse article tags:', article.id, e);
+                }
+
+                return (
+                  <motion.div
+                    key={article.id}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    variants={fadeUp}
+                    custom={i}
+                  >
+                    <Link href={`/articles/${article.slug}`}>
+                      <Card className="hover:shadow-xl transition-all cursor-pointer group h-full border-2 hover:border-[oklch(0.82_0.06_240_/_0.3)]">
+                        {article.imageUrl && (
+                          <div className="relative h-48 overflow-hidden">
+                            <img
+                              src={article.imageUrl}
+                              alt={article.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                            {article.isPremium && (
+                              <div className="absolute top-3 right-3">
+                                <Badge className="bg-gradient-to-r from-[oklch(0.82_0.06_240)] to-[oklch(0.88_0.05_330)] text-white">
+                                  Premium
+                                </Badge>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        <CardContent className="p-5">
+                          {article.category && (
+                            <Badge variant="secondary" className="text-xs capitalize mb-3">
+                              {article.category}
+                            </Badge>
+                          )}
+                          <h3 className="font-bold text-lg mb-2 group-hover:text-[oklch(0.82_0.06_240)] transition-colors line-clamp-2">
+                            {article.title}
+                          </h3>
+                          {article.excerpt && (
+                            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                              {article.excerpt}
+                            </p>
+                          )}
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{article.readingTimeMinutes} min read</span>
+                            <span>{article.author}</span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="text-center mt-6 sm:hidden">
+              <Button variant="outline" asChild className="rounded-xl bg-white">
+                <Link href="/discover">
+                  Read More <ChevronRight className="w-4 h-4 ml-1" />
+                </Link>
+              </Button>
+            </div>
+          </section>
+        )}
 
         {/* Featured Discover Content Section */}
         {featuredContent.length > 0 && (
