@@ -90,6 +90,16 @@ self.addEventListener('fetch', (event) => {
         });
 
         return response;
+      }).catch(() => {
+        // If fetch fails and no cache, redirect to timeout page for navigation requests
+        if (request.mode === 'navigate') {
+          return caches.match('/timeout') || caches.match('/index.html');
+        }
+        // For other requests, return a basic offline response
+        return new Response('Offline', {
+          status: 503,
+          statusText: 'Service Unavailable',
+        });
       });
     })
   );
