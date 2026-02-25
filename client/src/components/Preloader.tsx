@@ -102,15 +102,10 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         >
           {/* Logo */}
           <div className="mb-8 flex justify-center">
-            <div className="w-20 h-20 flex items-center justify-center">
-              <img src="/mannuhlogo.png" alt="mannuh" className="w-full h-full object-contain" />
-            </div>
+            <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '250px', height: 'auto' }} />
           </div>
 
-          {/* Brand Name */}
-          <h1 className="text-4xl font-black tracking-tight text-foreground mb-2">
-            mannuh
-          </h1>
+          {/* Tagline */}
           <p className="text-sm text-muted-foreground mb-12">
             Faith-based community
           </p>

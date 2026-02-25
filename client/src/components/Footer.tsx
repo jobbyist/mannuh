@@ -592,9 +592,8 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             {/* Brand Section */}
             <div className="col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <img src="/mannuhlogo.png" alt="mannuh" className="w-8 h-8 object-contain" />
-                <span className="font-bold text-xl tracking-tight">mannuh</span>
+              <div className="mb-4">
+                <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '250px', height: 'auto' }} />
               </div>
               <p className="text-sm mb-4">
                 <strong>Premier Faith-Based Community Platform</strong>
