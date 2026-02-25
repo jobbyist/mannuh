@@ -97,7 +97,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '175px', height: 'auto' }} />
+              <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '145px', height: 'auto' }} />
             </Link>
 
             {/* Desktop Nav */}
