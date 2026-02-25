@@ -18,26 +18,27 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import AIChatbot from "./AIChatbot";
 
 const navItems = [
-  { href: "/groups", label: "Cell Groups", icon: Users },
-  { href: "/reels", label: "Reels", icon: Play },
-  { href: "/discover", label: "Discover", icon: Compass },
+  { href: "/groups", labelKey: "nav.cellGroups", icon: Users },
+  { href: "/reels", labelKey: "nav.reels", icon: Play },
+  { href: "/discover", labelKey: "nav.discover", icon: Compass },
 ];
 
 const moreNavItems = [
-  { href: "/browse", label: "Browse Content", icon: BookOpen },
-  { href: "/pathways", label: "Guided Pathways", icon: BookOpen },
-  { href: "/events", label: "Events", icon: Award },
-  { href: "/churches", label: "Church Directory", icon: Users },
-  { href: "/wordly-series", label: "Podcast", icon: Podcast },
-  { href: "/shop", label: "The Mannuh Shop", icon: ShoppingBag },
-  { href: "/merchandise", label: "Merchandise", icon: ShoppingBag },
-  { href: "/pricing", label: "Pricing", icon: CreditCard },
-  { href: "/kids", label: "Mannuh for Kids", icon: Baby },
-  { href: "/founding-members", label: "Founding Members", icon: Award },
-  { href: "/help", label: "Help Center", icon: HelpCircle },
+  { href: "/browse", labelKey: "moreMenu.browseContent", icon: BookOpen },
+  { href: "/pathways", labelKey: "moreMenu.guidedPathways", icon: BookOpen },
+  { href: "/events", labelKey: "moreMenu.events", icon: Award },
+  { href: "/churches", labelKey: "moreMenu.churchDirectory", icon: Users },
+  { href: "/wordly-series", labelKey: "moreMenu.podcast", icon: Podcast },
+  { href: "/shop", labelKey: "moreMenu.shop", icon: ShoppingBag },
+  { href: "/merchandise", labelKey: "moreMenu.merchandise", icon: ShoppingBag },
+  { href: "/pricing", labelKey: "moreMenu.pricing", icon: CreditCard },
+  { href: "/kids", labelKey: "moreMenu.kids", icon: Baby },
+  { href: "/founding-members", labelKey: "moreMenu.foundingMembers", icon: Award },
+  { href: "/help", labelKey: "moreMenu.helpCenter", icon: HelpCircle },
 ];
 
 const languages = [
@@ -53,7 +54,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentLanguage, setCurrentLanguage] = useState("en");
+  const { t, i18n } = useTranslation();
+  
+  const currentLanguage = i18n.language;
+  
+  const changeLanguage = (langCode: string) => {
+    i18n.changeLanguage(langCode);
+  };
 
   const unreadQuery = trpc.notifications.unreadCount.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -85,7 +92,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                         : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}>
                       <Icon className="w-4 h-4" />
-                      {item.label}
+                      {t(item.labelKey)}
                     </button>
                   </Link>
                 );
@@ -96,7 +103,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
                     <MoreHorizontal className="w-4 h-4" />
-                    More
+                    {t("nav.more")}
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-52">
@@ -106,7 +113,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       <DropdownMenuItem key={item.href} asChild>
                         <Link href={item.href} className="flex items-center gap-2">
                           <Icon className="w-4 h-4" />
-                          {item.label}
+                          {t(item.labelKey)}
                         </Link>
                       </DropdownMenuItem>
                     );
@@ -125,12 +132,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-40">
-                  <DropdownMenuLabel className="text-xs">Language</DropdownMenuLabel>
+                  <DropdownMenuLabel className="text-xs">{t("nav.language")}</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {languages.map((lang) => (
                     <DropdownMenuItem
                       key={lang.code}
-                      onClick={() => setCurrentLanguage(lang.code)}
+                      onClick={() => changeLanguage(lang.code)}
                       className={currentLanguage === lang.code ? "bg-muted" : ""}
                     >
                       {lang.name}
@@ -174,25 +181,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <DropdownMenuItem asChild>
                       <Link href={`/profile/${user?.id}`} className="flex items-center gap-2">
                         <User className="w-4 h-4" />
-                        My Profile
+                        {t("nav.myProfile")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link href="/settings" className="flex items-center gap-2">
                         <Settings className="w-4 h-4" />
-                        Settings
+                        {t("nav.settings")}
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => logout()} className="text-destructive">
                       <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
+                      {t("nav.signOut")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
                 <Button size="sm" asChild>
-                  <a href={getLoginUrl()}>Sign In</a>
+                  <a href={getLoginUrl()}>{t("nav.signIn")}</a>
                 </Button>
               )}
 
@@ -221,7 +228,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       }`}>
                         <Icon className="w-4 h-4" />
-                        {item.label}
+                        {t(item.labelKey)}
                       </button>
                     </Link>
                   );
@@ -242,7 +249,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                           : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       }`}>
                         <Icon className="w-4 h-4" />
-                        {item.label}
+                        {t(item.labelKey)}
                       </button>
                     </Link>
                   );

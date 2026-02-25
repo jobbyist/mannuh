@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import {
   Instagram, Twitter, Facebook, Music, Youtube, MessageCircle,
   Mail, Apple, Chrome, CreditCard
@@ -20,34 +21,34 @@ const socialLinks = [
 ];
 
 const aboutLinks = [
-  { label: "Company Profile", href: "/about" },
-  { label: "Founding Members", href: "/founding-members" },
-  { label: "Advertise With Us", href: "/ads" },
-  { label: "Support A Cause", href: "/support" },
-  { label: "Business Solutions", href: "/business" },
-  { label: "Partner Program", href: "/partner" },
-  { label: "Donate/Support", href: "/donate" },
-  { label: "Help Center", href: "/help" },
+  { labelKey: "footer.companyProfile", href: "/about" },
+  { labelKey: "footer.foundingMembers", href: "/founding-members" },
+  { labelKey: "footer.advertise", href: "/ads" },
+  { labelKey: "footer.supportCause", href: "/support" },
+  { labelKey: "footer.businessSolutions", href: "/business" },
+  { labelKey: "footer.partnerProgram", href: "/partner" },
+  { labelKey: "footer.donate", href: "/donate" },
+  { labelKey: "footer.helpCenter", href: "/help" },
 ];
 
 const exploreLinks = [
-  { label: "Create/Join Cell Groups", href: "/groups" },
-  { label: "Featured Articles & Stories", href: "/discover" },
-  { label: "Guided Pathways & Courses", href: "/pathways" },
-  { label: "Discover Upcoming Events", href: "/events" },
-  { label: "The Wordly Podcast Series", href: "/wordly-series" },
-  { label: "Church/Ministry Directory", href: "/churches" },
-  { label: "Membership Pricing Plans", href: "/pricing" },
-  { label: "The Official Mannuh Store", href: "/shop" },
+  { labelKey: "footer.createJoinGroups", href: "/groups" },
+  { labelKey: "footer.featuredArticles", href: "/discover" },
+  { labelKey: "footer.guidedPathways", href: "/pathways" },
+  { labelKey: "footer.discoverEvents", href: "/events" },
+  { labelKey: "footer.wordlyPodcast", href: "/wordly-series" },
+  { labelKey: "footer.churchDirectory", href: "/churches" },
+  { labelKey: "footer.pricingPlans", href: "/pricing" },
+  { labelKey: "footer.mannuhStore", href: "/shop" },
 ];
 
 const quickLinks = [
-  { label: "Terms of Use", href: "#", onClick: "terms" },
-  { label: "Privacy Policy", href: "#", onClick: "privacy" },
-  { label: "Cookie Policy", href: "#", onClick: "cookies" },
-  { label: "Refund Policy", href: "#", onClick: "refunds" },
-  { label: "Community", href: "#", onClick: "guidelines" },
-  { label: "Contact Us", href: "#", onClick: "contact" },
+  { labelKey: "footer.termsOfUse", href: "#", onClick: "terms" },
+  { labelKey: "footer.privacyPolicy", href: "#", onClick: "privacy" },
+  { labelKey: "footer.cookiePolicy", href: "#", onClick: "cookies" },
+  { labelKey: "footer.refundPolicy", href: "#", onClick: "refunds" },
+  { labelKey: "footer.community", href: "#", onClick: "guidelines" },
+  { labelKey: "footer.contactUs", href: "#", onClick: "contact" },
 ];
 
 const legalPolicies = {
@@ -633,6 +634,7 @@ type LegalPolicy = keyof typeof legalPolicies;
 
 export default function Footer() {
   const [openPolicy, setOpenPolicy] = useState<LegalPolicy | null>(null);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -645,7 +647,7 @@ export default function Footer() {
                 <img src="/mannuhlogo.png" alt="mannuh logo" style={{ width: '200px', height: 'auto' }} />
               </div>
               <p className="text-sm mb-4">
-                <strong>Premier Faith-Based Community Platform</strong>
+                <strong>{t("footer.premierPlatform")}</strong>
               </p>
               {/* Social Media Links */}
               <div className="flex flex-wrap gap-2">
@@ -666,13 +668,13 @@ export default function Footer() {
 
             {/* ABOUT */}
             <div>
-              <h3 className="font-semibold text-foreground mb-4">ABOUT</h3>
+              <h3 className="font-semibold text-foreground mb-4">{t("footer.about")}</h3>
               <ul className="space-y-2">
                 {aboutLinks.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.labelKey}>
                     <Link href={link.href}>
                       <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                        {link.label}
+                        {t(link.labelKey)}
                       </a>
                     </Link>
                   </li>
@@ -682,13 +684,13 @@ export default function Footer() {
 
             {/* EXPLORE */}
             <div>
-              <h3 className="font-semibold text-foreground mb-4">EXPLORE</h3>
+              <h3 className="font-semibold text-foreground mb-4">{t("footer.explore")}</h3>
               <ul className="space-y-2">
                 {exploreLinks.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.labelKey}>
                     <Link href={link.href}>
                       <a className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                        {link.label}
+                        {t(link.labelKey)}
                       </a>
                     </Link>
                   </li>
@@ -698,15 +700,15 @@ export default function Footer() {
 
             {/* QUICK LINKS */}
             <div>
-              <h3 className="font-semibold text-foreground mb-4">QUICK LINKS</h3>
+              <h3 className="font-semibold text-foreground mb-4">{t("footer.quickLinks")}</h3>
               <ul className="space-y-2">
                 {quickLinks.map((link) => (
-                  <li key={link.label}>
+                  <li key={link.labelKey}>
                     <button
                       onClick={() => setOpenPolicy(link.onClick as LegalPolicy)}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors text-left"
                     >
-                      {link.label}
+                      {t(link.labelKey)}
                     </button>
                   </li>
                 ))}
@@ -759,7 +761,7 @@ export default function Footer() {
           {/* Payment Methods */}
           <div className="border-t border-border/50 pt-8 mb-8">
             <div className="flex flex-col items-center gap-4">
-              <p className="text-xs text-muted-foreground font-medium">Accepted Payment Methods</p>
+              <p className="text-xs text-muted-foreground font-medium">{t("footer.acceptedPayment")}</p>
               <div className="flex items-center gap-4 flex-wrap justify-center">
                 {/* Visa */}
                 <div className="h-8 px-3 bg-white border border-border/50 rounded flex items-center justify-center">
@@ -804,7 +806,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <div className="text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} mannuh. A Gravitas Industries Initiative. All Rights Reserved.</p>
+            <p>© {new Date().getFullYear()} {t("footer.copyright")}</p>
           </div>
         </div>
       </footer>
