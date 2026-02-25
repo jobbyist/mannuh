@@ -367,6 +367,13 @@ export const appRouter = router({
       return { groups: groupResults, creators: creatorResults, content: contentResults };
     }),
   }),
+
+  // ===== NEW FEATURES =====
+  pathways: pathwaysRouter,
+  articles: articlesRouter,
+  events: eventsRouter,
+  churches: churchesRouter,
+  userExtended: userExtendedRouter,
 });
 
 // ===== LLM CONTENT MODERATION =====
@@ -406,5 +413,178 @@ async function moderateContent(text: string): Promise<{ safe: boolean; reason?: 
   }
   return { safe: true }; // Default to safe if moderation fails
 }
+
+// ===== PATHWAYS ROUTER =====
+const pathwaysRouter = router({
+  list: publicProcedure.input(z.object({
+    limit: z.number().optional(),
+  }).optional()).query(async ({ input }) => {
+    return db.getPathways(input ?? {});
+  }),
+  get: publicProcedure.input(z.object({ id: z.number() })).query(async ({ input }) => {
+    const pathway = await db.getPathwayById(input.id);
+    if (!pathway) return null;
+    const steps = await db.getPathwaySteps(input.id);
+    return { ...pathway, steps };
+  }),
+  progress: protectedProcedure.input(z.object({ pathwayId: z.number() })).query(async ({ ctx, input }) => {
+    return db.getUserPathwayProgress(ctx.user.id, input.pathwayId);
+  }),
+  updateProgress: protectedProcedure.input(z.object({
+    pathwayId: z.number(),
+    completedSteps: z.string().optional(),
+    currentStep: z.number().optional(),
+    isCompleted: z.boolean().optional(),
+  })).mutation(async ({ ctx, input }) => {
+    const { pathwayId, ...data } = input;
+    await db.updatePathwayProgress(ctx.user.id, pathwayId, data);
+    
+    // Award badge if pathway completed
+    if (data.isCompleted) {
+      const pathway = await db.getPathwayById(pathwayId);
+      await db.awardBadge(ctx.user.id, `pathway-${pathwayId}`, JSON.stringify({ pathwayTitle: pathway?.title }));
+    }
+    
+    return { success: true };
+  }),
+});
+
+// ===== ARTICLES ROUTER =====
+const articlesRouter = router({
+  list: publicProcedure.input(z.object({
+    limit: z.number().optional(),
+    offset: z.number().optional(),
+    isPremium: z.boolean().optional(),
+    category: z.string().optional(),
+  }).optional()).query(async ({ input }) => {
+    return db.getArticles(input ?? {});
+  }),
+  get: publicProcedure.input(z.object({ slug: z.string() })).query(async ({ input }) => {
+    const article = await db.getArticleBySlug(input.slug);
+    if (article) {
+      await db.incrementArticleViews(article.id);
+    }
+    return article;
+  }),
+  like: protectedProcedure.input(z.object({ articleId: z.number() })).mutation(async ({ ctx, input }) => {
+    const liked = await db.likeArticle(input.articleId, ctx.user.id);
+    return { liked };
+  }),
+  hasLiked: protectedProcedure.input(z.object({ articleId: z.number() })).query(async ({ ctx, input }) => {
+    return db.hasLikedArticle(input.articleId, ctx.user.id);
+  }),
+  comments: publicProcedure.input(z.object({ articleId: z.number() })).query(async ({ input }) => {
+    return db.getArticleComments(input.articleId);
+  }),
+  addComment: protectedProcedure.input(z.object({
+    articleId: z.number(),
+    content: z.string().min(1),
+  })).mutation(async ({ ctx, input }) => {
+    const commentId = await db.addArticleComment(input.articleId, ctx.user.id, input.content);
+    return { commentId };
+  }),
+});
+
+// ===== EVENTS ROUTER =====
+const eventsRouter = router({
+  list: publicProcedure.input(z.object({
+    limit: z.number().optional(),
+    offset: z.number().optional(),
+    eventType: z.string().optional(),
+    category: z.string().optional(),
+  }).optional()).query(async ({ input }) => {
+    return db.getEvents(input ?? {});
+  }),
+  get: publicProcedure.input(z.object({ id: z.number() })).query(async ({ input }) => {
+    return db.getEventById(input.id);
+  }),
+  create: protectedProcedure.input(z.object({
+    title: z.string().min(1),
+    description: z.string().optional(),
+    imageUrl: z.string().optional(),
+    eventType: z.enum(["online", "in-person", "hybrid"]),
+    category: z.string().optional(),
+    location: z.string().optional(),
+    virtualLink: z.string().optional(),
+    startTime: z.number(),
+    endTime: z.number(),
+    timezone: z.string().optional(),
+    maxAttendees: z.number().optional(),
+    isPaid: z.boolean().optional(),
+    ticketPrice: z.number().optional(),
+  })).mutation(async ({ ctx, input }) => {
+    const eventId = await db.createEvent({
+      ...input,
+      organizerId: ctx.user.id,
+      organizerType: "user",
+    });
+    return { eventId };
+  }),
+  register: protectedProcedure.input(z.object({
+    eventId: z.number(),
+    ticketsPurchased: z.number().optional(),
+  })).mutation(async ({ ctx, input }) => {
+    const registered = await db.registerForEvent(input.eventId, ctx.user.id, input.ticketsPurchased);
+    return { registered };
+  }),
+  isRegistered: protectedProcedure.input(z.object({ eventId: z.number() })).query(async ({ ctx, input }) => {
+    return db.isRegisteredForEvent(input.eventId, ctx.user.id);
+  }),
+});
+
+// ===== CHURCHES ROUTER =====
+const churchesRouter = router({
+  list: publicProcedure.input(z.object({
+    limit: z.number().optional(),
+    offset: z.number().optional(),
+    search: z.string().optional(),
+    country: z.string().optional(),
+    denomination: z.string().optional(),
+  }).optional()).query(async ({ input }) => {
+    return db.getChurches(input ?? {});
+  }),
+  get: publicProcedure.input(z.object({ id: z.number() })).query(async ({ input }) => {
+    return db.getChurchById(input.id);
+  }),
+});
+
+// ===== USER EXTENDED FEATURES =====
+const userExtendedRouter = router({
+  badges: protectedProcedure.input(z.object({ userId: z.number() })).query(async ({ input }) => {
+    return db.getUserBadges(input.userId);
+  }),
+  blockUser: protectedProcedure.input(z.object({ userId: z.number() })).mutation(async ({ ctx, input }) => {
+    const blocked = await db.blockUser(ctx.user.id, input.userId);
+    return { blocked };
+  }),
+  unblockUser: protectedProcedure.input(z.object({ userId: z.number() })).mutation(async ({ ctx, input }) => {
+    await db.unblockUser(ctx.user.id, input.userId);
+    return { success: true };
+  }),
+  muteUser: protectedProcedure.input(z.object({ userId: z.number() })).mutation(async ({ ctx, input }) => {
+    const muted = await db.muteUser(ctx.user.id, input.userId);
+    return { muted };
+  }),
+  unmuteUser: protectedProcedure.input(z.object({ userId: z.number() })).mutation(async ({ ctx, input }) => {
+    await db.unmuteUser(ctx.user.id, input.userId);
+    return { success: true };
+  }),
+  sendMessage: protectedProcedure.input(z.object({
+    recipientId: z.number(),
+    content: z.string().min(1),
+  })).mutation(async ({ ctx, input }) => {
+    // Check if both users are premium and have DM enabled
+    const sender = await db.getUserById(ctx.user.id);
+    const recipient = await db.getUserById(input.recipientId);
+    if (!sender?.isPremium || !recipient?.isPremium || !sender?.dmEnabled || !recipient?.dmEnabled) {
+      return { messageId: null, error: "Direct messages require both users to be premium with DM enabled" };
+    }
+    const messageId = await db.sendDirectMessage(ctx.user.id, input.recipientId, input.content);
+    return { messageId };
+  }),
+  getMessages: protectedProcedure.input(z.object({ userId: z.number() })).query(async ({ ctx, input }) => {
+    return db.getDirectMessages(ctx.user.id, input.userId);
+  }),
+});
 
 export type AppRouter = typeof appRouter;

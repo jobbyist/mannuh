@@ -1,13 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import Layout from "@/components/Layout";
 import Footer from "@/components/Footer";
 import { 
   Users, Crown, TrendingUp, Award, FileText, 
-  DollarSign, Calendar, Shield, ExternalLink 
+  DollarSign, Calendar, Shield, ExternalLink, Clock
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -51,7 +53,46 @@ const benefits = [
   }
 ];
 
+// Campaign details
+const CAMPAIGN_START = new Date("2025-12-01").getTime();
+const CAMPAIGN_DURATION_DAYS = 90;
+const CAMPAIGN_END = CAMPAIGN_START + (CAMPAIGN_DURATION_DAYS * 24 * 60 * 60 * 1000);
+const CURRENT_MEMBERS = 15;
+const GOAL_MEMBERS = 100;
+const GOAL_AMOUNT = 10000; // $10,000
+const CONTRIBUTION_AMOUNT = 100; // $100 per member
+
 export default function FoundingMembers() {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = Date.now();
+      const difference = CAMPAIGN_END - now;
+
+      if (difference > 0) {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const progressPercentage = (CURRENT_MEMBERS / GOAL_MEMBERS) * 100;
+
   return (
     <Layout>
       <div className="min-h-screen bg-background">
@@ -80,22 +121,75 @@ export default function FoundingMembers() {
               <Card>
                 <CardContent className="p-6 text-center">
                   <div className="text-3xl font-black text-primary mb-2">100</div>
-                  <div className="text-sm text-muted-foreground">Founding Members</div>
+                  <div className="text-sm text-muted-foreground">Founding Members Max</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 text-center">
-                  <div className="text-3xl font-black text-primary mb-2">$250</div>
+                  <div className="text-3xl font-black text-primary mb-2">$100</div>
                   <div className="text-sm text-muted-foreground">Annual Contribution</div>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="p-6 text-center">
-                  <div className="text-3xl font-black text-primary mb-2">April 1</div>
-                  <div className="text-sm text-muted-foreground">Official Launch Date</div>
+                  <div className="text-3xl font-black text-primary mb-2">{timeLeft.days}</div>
+                  <div className="text-sm text-muted-foreground">Days Remaining</div>
                 </CardContent>
               </Card>
             </div>
+
+            {/* Countdown Timer */}
+            <Card className="max-w-2xl mx-auto mb-8 bg-gradient-to-r from-[oklch(0.82_0.06_240_/_0.1)] to-[oklch(0.88_0.05_330_/_0.1)] border-2 border-[oklch(0.82_0.06_240_/_0.3)]">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Clock className="w-5 h-5 text-[oklch(0.82_0.06_240)]" />
+                  <h3 className="text-lg font-bold">Application Window</h3>
+                </div>
+                <div className="grid grid-cols-4 gap-4 text-center">
+                  <div>
+                    <div className="text-3xl font-black text-[oklch(0.82_0.06_240)]">{timeLeft.days}</div>
+                    <div className="text-xs text-muted-foreground uppercase">Days</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-[oklch(0.82_0.06_240)]">{String(timeLeft.hours).padStart(2, '0')}</div>
+                    <div className="text-xs text-muted-foreground uppercase">Hours</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-[oklch(0.82_0.06_240)]">{String(timeLeft.minutes).padStart(2, '0')}</div>
+                    <div className="text-xs text-muted-foreground uppercase">Minutes</div>
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-[oklch(0.82_0.06_240)]">{String(timeLeft.seconds).padStart(2, '0')}</div>
+                    <div className="text-xs text-muted-foreground uppercase">Seconds</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Progress Tracker */}
+            <Card className="max-w-2xl mx-auto mb-8">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-bold mb-1">Campaign Progress</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {CURRENT_MEMBERS} founding members joined since Dec 1, 2025
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-2xl font-black text-[oklch(0.82_0.06_240)]">
+                      ${(CURRENT_MEMBERS * CONTRIBUTION_AMOUNT).toLocaleString()}
+                    </div>
+                    <div className="text-xs text-muted-foreground">of ${GOAL_AMOUNT.toLocaleString()} goal</div>
+                  </div>
+                </div>
+                <Progress value={progressPercentage} className="h-3 mb-2" />
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{progressPercentage.toFixed(0)}% complete</span>
+                  <span className="font-semibold">{GOAL_MEMBERS - CURRENT_MEMBERS} spots remaining</span>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </section>
 
@@ -177,9 +271,9 @@ export default function FoundingMembers() {
                     Contribution Fee
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    <strong>$250 annual, non-refundable</strong> founder's contribution fee. This fee is 
-                    subject to revision/increase without prior notice and at the sole discretion of the 
-                    board of directors of Gravitas Industries Pty Ltd, as per the Founder's Agreement.
+                    <strong>$100 annual, non-refundable</strong> founder's contribution fee (subject to change). 
+                    This fee supports the ongoing development, launch, and growth of the platform. Limited to 
+                    the first 100 members who join within the 90-day application window.
                   </p>
                 </div>
 
