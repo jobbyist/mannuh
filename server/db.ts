@@ -5,7 +5,7 @@ import {
   reels, reelLikes, reelComments, follows, discoveryContent,
   tags, notifications, pathways, pathwaySteps, pathwayProgress,
   articles, articleLikes, articleComments, events, eventRegistrations,
-  churches, userBadges, userBlocks, userMutes, directMessages
+  churches, userBadges, userBlocks, userMutes, directMessages, contentReports
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -639,4 +639,51 @@ export async function getDirectMessages(userId: number, otherUserId: number) {
       and(eq(directMessages.senderId, otherUserId), eq(directMessages.recipientId, userId))
     )!
   ).orderBy(directMessages.createdAt);
+}
+
+// ===== CONTENT MODERATION =====
+export async function createContentReport(data: {
+  reporterId: number;
+  contentType: string;
+  contentId: number;
+  reason: string;
+  description?: string;
+}) {
+  const db = await getDb();
+  if (!db) return null;
+  const [result] = await db.insert(contentReports).values(data as any).$returningId();
+  return result.id;
+}
+
+export async function getContentReports(options: {
+  status?: string;
+  limit?: number;
+  offset?: number;
+} = {}) {
+  const db = await getDb();
+  if (!db) return [];
+  const { status, limit = 50, offset = 0 } = options;
+  
+  let query = db.select().from(contentReports);
+  if (status) {
+    query = query.where(eq(contentReports.status, status as any));
+  }
+  
+  return query.orderBy(desc(contentReports.createdAt)).limit(limit).offset(offset);
+}
+
+export async function updateContentReport(
+  reportId: number,
+  updates: {
+    status?: string;
+    reviewedBy?: number;
+    reviewNotes?: string;
+    actionTaken?: string;
+    reviewedAt?: number;
+  }
+) {
+  const db = await getDb();
+  if (!db) return null;
+  await db.update(contentReports).set(updates as any).where(eq(contentReports.id, reportId));
+  return true;
 }
