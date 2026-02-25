@@ -86,7 +86,7 @@ export default function Home() {
             >
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[oklch(0.82_0.06_240_/_0.15)] text-primary text-xs font-semibold tracking-wide uppercase mb-6">
                 <Heart className="w-3 h-3" />
-                Faith-based community
+                Premier Faith-Based Community Platform
               </span>
             </motion.div>
 
@@ -97,9 +97,9 @@ export default function Home() {
               variants={fadeUp}
               custom={1}
             >
-              Grow together
+              A safe space
               <br />
-              in <span className="text-primary">faith</span> &{" "}
+              for <span className="text-primary">faith</span> &{" "}
               <span className="text-[oklch(0.65_0.08_10)]">fellowship</span>
             </motion.h1>
 
@@ -110,8 +110,8 @@ export default function Home() {
               variants={fadeUp}
               custom={2}
             >
-              Join virtual cell groups, discover inspiring Christian content, and connect
-              with creators who share your faith journey.
+              Create and discover interactive virtual cell groups, expertly curated Christian content to inspire you, special events and workshops, and connect
+              with a growing community of believers who share your faith journey.
             </motion.p>
 
             <motion.div
@@ -137,12 +137,12 @@ export default function Home() {
                 <>
                   <Button size="lg" asChild className="rounded-xl px-8 h-12 text-base font-semibold">
                     <a href={getLoginUrl()}>
-                      Get Started
+                      Create An Account
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </a>
                   </Button>
                   <Button size="lg" variant="outline" asChild className="rounded-xl px-8 h-12 text-base font-semibold bg-white">
-                    <Link href="/discover">Discover Content</Link>
+                    <Link href="/browse">Browse</Link>
                   </Button>
                 </>
               )}
