@@ -4,6 +4,41 @@
  */
 
 import * as db from "./db";
+import { drizzle } from "drizzle-orm/mysql2";
+import { articles } from "../drizzle/schema";
+
+type DiscoverSeedItem = {
+  title: string;
+  description: string;
+  sourceUrl: string;
+  sourceName: string;
+  imageUrl?: string;
+  category: string;
+  tags: string;
+  contentType: "article";
+};
+
+type FirecrawlExtractResponse = {
+  success?: boolean;
+  data?: {
+    markdown?: string;
+    metadata?: {
+      title?: string;
+      description?: string;
+      ogImage?: string;
+      sourceURL?: string;
+      siteName?: string;
+    };
+  };
+};
+
+const createSlug = (title: string) => title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+function getSeedDb() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) return null;
+  return drizzle(databaseUrl);
+}
 
 // Sample Christian articles and stories
 const christianArticles = [
@@ -109,6 +144,139 @@ const christianArticles = [
   },
 ];
 
+const firecrawlTargets = [
+  { url: "https://www.desiringgod.org", category: "devotional", tags: ["devotional", "christian-living", "discipleship"] },
+  { url: "https://www.thegospelcoalition.org", category: "bible-study", tags: ["bible-study", "gospel", "theology"] },
+  { url: "https://www.christianitytoday.com", category: "community", tags: ["community", "church", "culture"] },
+  { url: "https://www.relevantmagazine.com", category: "faith", tags: ["faith", "daily-life", "encouragement"] },
+  { url: "https://www.biblegateway.com", category: "bible-study", tags: ["scripture", "bible-study", "faith"] },
+];
+
+const premiumOriginalArticles = [
+  {
+    title: "When God Feels Silent: A Biblical Guide to Persevering Prayer",
+    excerpt: "How to keep praying with confidence when heaven feels quiet.",
+    category: "Prayer",
+    tags: ["prayer", "perseverance", "faith"],
+  },
+  {
+    title: "Discerning God's Voice in a Noisy World",
+    excerpt: "Practical biblical wisdom for hearing God clearly amid competing voices.",
+    category: "Spiritual Growth",
+    tags: ["discernment", "holy-spirit", "wisdom"],
+  },
+  {
+    title: "Healing After Church Hurt: A Gospel-Centered Path Forward",
+    excerpt: "A restorative pathway toward forgiveness, boundaries, and renewed trust in Christ.",
+    category: "Healing",
+    tags: ["healing", "church", "forgiveness"],
+  },
+  {
+    title: "Kingdom Leadership at Work: Living as Salt and Light",
+    excerpt: "How to integrate integrity, excellence, and witness in your daily vocation.",
+    category: "Leadership",
+    tags: ["leadership", "work", "mission"],
+  },
+  {
+    title: "Biblical Financial Stewardship in Uncertain Times",
+    excerpt: "Timeless principles for generosity, budgeting, and trusting God with provision.",
+    category: "Stewardship",
+    tags: ["stewardship", "generosity", "wisdom"],
+  },
+];
+
+async function fetchFirecrawlArticles() {
+  const apiKey = process.env.FIRECRAWL_API_KEY;
+  if (!apiKey) {
+    console.log("  ⚠ FIRECRAWL_API_KEY not set. Falling back to local curated content.");
+    return [] as DiscoverSeedItem[];
+  }
+
+  const collected: DiscoverSeedItem[] = [];
+
+  for (const target of firecrawlTargets) {
+    try {
+      const response = await fetch("https://api.firecrawl.dev/v1/scrape", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          url: target.url,
+          formats: ["markdown"],
+          onlyMainContent: true,
+        }),
+      });
+
+      if (!response.ok) {
+        console.log(`  ⚠ Firecrawl request failed for ${target.url}: ${response.status}`);
+        continue;
+      }
+
+      const payload = (await response.json()) as FirecrawlExtractResponse;
+      const title = payload?.data?.metadata?.title || `Featured from ${target.url}`;
+      const description = payload?.data?.metadata?.description || "Curated Christian content item powered by Firecrawl.";
+      const sourceUrl = payload?.data?.metadata?.sourceURL || target.url;
+      const sourceName = payload?.data?.metadata?.siteName || new URL(target.url).hostname.replace("www.", "");
+
+      collected.push({
+        title,
+        description,
+        sourceUrl,
+        sourceName,
+        imageUrl: payload?.data?.metadata?.ogImage,
+        category: target.category,
+        tags: JSON.stringify(target.tags),
+        contentType: "article",
+      });
+    } catch (error) {
+      console.log(`  ⚠ Firecrawl integration error for ${target.url}:`, error);
+    }
+  }
+
+  return collected;
+}
+
+async function seedPremiumArticles() {
+  console.log("📝 Seeding premium original articles...");
+  const seedDb = getSeedDb();
+  if (!seedDb) {
+    console.log("  ⚠ DATABASE_URL not set. Skipping premium article inserts.");
+    return;
+  }
+
+  for (let i = 0; i < premiumOriginalArticles.length; i++) {
+    const article = premiumOriginalArticles[i];
+    const slug = createSlug(article.title);
+
+    await seedDb.insert(articles).values({
+      title: article.title,
+      slug,
+      excerpt: article.excerpt,
+      content: `${article.title}\n\n${article.excerpt}\n\nThis premium article is intentionally written as original long-form editorial content for members. It includes biblical reflection, practical applications, prayer prompts, and discussion questions to support discipleship and personal growth.\n\nKey Scriptures:\n- Romans 12:2\n- James 1:5\n- Psalm 119:105\n\nApplication:\n1. Reflect on the Scriptures above in your journal.\n2. Identify one practical action for this week.\n3. Share your takeaway with your small group.\n\nClosing Prayer:\nLord Jesus, help me apply Your Word faithfully and walk in obedience today. Amen.`,
+      author: "Published by the mannuh team",
+      category: article.category,
+      tags: JSON.stringify(article.tags),
+      readingTimeMinutes: 7,
+      isPremium: true,
+      imageUrl: `https://images.unsplash.com/photo-${1520000000000 + i}?w=1200&h=800&fit=crop`,
+      publishedAt: Date.now() - (i * 6 * 60 * 60 * 1000),
+    }).onDuplicateKeyUpdate({
+      set: {
+        excerpt: article.excerpt,
+        content: `${article.title}\n\n${article.excerpt}\n\nThis premium article is intentionally written as original long-form editorial content for members. It includes biblical reflection, practical applications, prayer prompts, and discussion questions to support discipleship and personal growth.\n\nKey Scriptures:\n- Romans 12:2\n- James 1:5\n- Psalm 119:105\n\nApplication:\n1. Reflect on the Scriptures above in your journal.\n2. Identify one practical action for this week.\n3. Share your takeaway with your small group.\n\nClosing Prayer:\nLord Jesus, help me apply Your Word faithfully and walk in obedience today. Amen.`,
+        category: article.category,
+        tags: JSON.stringify(article.tags),
+        isPremium: true,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+  console.log(`✅ Successfully seeded ${premiumOriginalArticles.length} premium articles\n`);
+}
+
 // Generate more articles by duplicating with variations
 const generateMoreArticles = (baseArticles: typeof christianArticles, count: number) => {
   const result = [...baseArticles];
@@ -170,7 +338,9 @@ async function seedDatabase() {
   try {
     // Seed Discovery Content (50 articles)
     console.log("📚 Seeding Christian articles and stories...");
-    const articles = generateMoreArticles(christianArticles, 50);
+    const firecrawlArticles = await fetchFirecrawlArticles();
+    const fallbackArticles = generateMoreArticles(christianArticles, 50);
+    const articles = [...firecrawlArticles, ...fallbackArticles].slice(0, 50);
     
     for (let i = 0; i < articles.length; i++) {
       const article = articles[i];
@@ -183,6 +353,8 @@ async function seedDatabase() {
       }
     }
     console.log(`✅ Successfully seeded ${articles.length} articles\n`);
+
+    await seedPremiumArticles();
 
     // Seed Cell Groups (29 groups)
     console.log("👥 Seeding cell groups...");
