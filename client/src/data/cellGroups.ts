@@ -732,7 +732,58 @@ export const sampleCellGroupsSeed: SampleCellGroup[] = [
       pushNotifications: true
     }
   },
+
+  {
+    id: "youth-campus-mentors-1",
+    name: "Campus Faith Mentors",
+    description: "A mentoring-focused youth cell group connecting college and young adult believers for discipleship, leadership coaching, and practical mission projects on campus.",
+    category: "Youth",
+    imageUrl: "/mannuhstoryplaceholder.png",
+    maxMembers: 28,
+    currentMemberCount: 19,
+    memberNames: generateMembers(19),
+    privacy: "private",
+    schedule: {
+      day: "Wednesday",
+      time: "18:00",
+      timezone: "EST",
+      recurring: "Weekly"
+    },
+    tags: ["youth", "campus", "mentorship", "discipleship"],
+    createdAt: "2024-02-18T16:00:00Z",
+    features: {
+      dmEnabled: true,
+      moderationEnabled: true,
+      pushNotifications: true
+    }
+  },
+  {
+    id: "prayer-night-watch-1",
+    name: "Night Watch Prayer Room",
+    description: "An after-hours prayer group committed to covering families, churches, and communities in intercession. Members rotate prayer slots and share real-time updates.",
+    category: "Prayer",
+    imageUrl: "/mannuhstoryplaceholder.png",
+    maxMembers: 32,
+    currentMemberCount: 14,
+    memberNames: generateMembers(14),
+    privacy: "offline",
+    schedule: {
+      day: "Friday",
+      time: "23:00",
+      timezone: "GMT",
+      recurring: "Weekly"
+    },
+    tags: ["prayer", "night-watch", "intercession", "revival"],
+    createdAt: "2024-02-20T21:00:00Z",
+    features: {
+      dmEnabled: false,
+      moderationEnabled: true,
+      pushNotifications: true
+    }
+  },
 ];
+
+export const cellGroupsSeed = sampleCellGroupsSeed;
 
 // Helper functions
 export function getCellGroupsByCategory(category: CellGroupCategory): SampleCellGroup[] {

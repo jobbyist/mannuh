@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, ExternalLink, Shield, CheckCircle, ShoppingBag, CreditCard, DollarSign } from "lucide-react";
 import { motion } from "framer-motion";
-import Layout from "@/components/Layout";
 import { causesSeed } from "@/data/causes";
 
 const fadeUp = {
@@ -96,7 +95,7 @@ export default function Donate() {
   const selectedCharityName = allCharityOptions.find(c => c.id === selectedCharity)?.name || "Not selected";
 
   return (
-    <Layout>
+    <>
       <div className="container py-20">
         {/* Hero Section */}
         <motion.div
@@ -385,6 +384,6 @@ export default function Donate() {
           </Card>
         </motion.div>
       </div>
-    </Layout>
+    </>
   );
 }
