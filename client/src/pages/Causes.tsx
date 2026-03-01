@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, ExternalLink, Search, Filter } from "lucide-react";
 import { motion } from "framer-motion";
-import Layout from "@/components/Layout";
 import { causesSeed, getAllCategories, getAllRegions } from "@/data/causes";
 
 const fadeUp = {
@@ -68,7 +67,7 @@ export default function Causes() {
   }, [searchQuery, selectedCategory, selectedRegion, sortBy]);
 
   return (
-    <Layout>
+    <>
       {/* SEO metadata handled by Layout component */}
       <div className="container py-20">
         {/* Hero Section */}
@@ -267,6 +266,6 @@ export default function Causes() {
           )}
         </div>
       </div>
-    </Layout>
+    </>
   );
 }

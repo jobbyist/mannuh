@@ -1,697 +1,133 @@
-import { useState } from "react";
-import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import {
-  User, Bell, CreditCard, Shield, Sparkles, Upload, Save, Instagram,
-  Twitter, Facebook, Youtube, Globe, BookHeart
-} from "lucide-react";
-import { toast } from "sonner";
+import { useMemo, useState } from "react";
 import Layout from "@/components/Layout";
-import Footer from "@/components/Footer";
-import PrayerJournal from "@/components/PrayerJournal";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
+
+const existingUsernames = new Set(["@mannuh", "@faithjourney", "@gracehub"]);
 
 export default function Settings() {
-  const { user, isAuthenticated } = useAuth();
-  const utils = trpc.useUtils();
+  const { user } = useAuth();
+  const isPremium = (user as any)?.subscription === "premium" || (user as any)?.isPremium;
 
-  // Profile form state
-  const [profileForm, setProfileForm] = useState({
-    username: user?.name || "",
-    name: user?.name || "",
-    email: user?.email || "",
-    bio: user?.bio || "",
-    age: "",
-    nickname: "",
+  const [profile, setProfile] = useState({
+    displayName: user?.name ?? "",
+    username: "",
+    testimony: "",
     church: "",
-    doctrine: "",
-    interests: user?.interests || "",
-    instagramHandle: "",
-    twitterHandle: "",
-    facebookHandle: "",
-    youtubeHandle: "",
+    denomination: "None",
+    languages: "English",
+    currency: "USD",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    profileVisibility: "public",
+    spiritualGifts: "Teaching, Mercy",
+    prayerPoints: "",
+    goals: "community",
+    creatorMode: false,
+    kycVerified: false,
+    tipsEnabled: false,
+    aiOptIn: false,
+    mutedContent: "",
+    blockedUsers: "",
   });
 
-  // Notification preferences
-  const [notificationPrefs, setNotificationPrefs] = useState({
-    emailNotifications: true,
-    pushNotifications: true,
-    cellGroupUpdates: true,
-    reelLikes: true,
-    newFollowers: true,
-    weeklyDigest: true,
-    productUpdates: false,
-  });
+  const usernameError = useMemo(() => {
+    if (!profile.username) return "";
+    if (!/^@[a-zA-Z0-9_]{3,20}$/.test(profile.username)) return "Use @ + 3-20 letters, numbers, underscore.";
+    if (existingUsernames.has(profile.username.toLowerCase())) return "This username is already taken.";
+    return "";
+  }, [profile.username]);
 
-  // Creator mode
-  const [isCreatorMode, setIsCreatorMode] = useState(user?.isCreator || false);
-
-  const updateMutation = trpc.profile.update.useMutation({
-    onSuccess: () => {
-      utils.auth.me.invalidate();
-      toast.success("Settings updated successfully!");
-    },
-    onError: () => {
-      toast.error("Failed to update settings");
-    },
-  });
-
-  const handleSaveProfile = () => {
-    updateMutation.mutate({
-      name: profileForm.name,
-      bio: profileForm.bio,
-      interests: profileForm.interests,
-      isCreator: isCreatorMode,
-    });
+  const save = () => {
+    if (usernameError) {
+      toast.error(usernameError);
+      return;
+    }
+    localStorage.setItem("mannuh-profile-preferences", JSON.stringify(profile));
+    toast.success("Profile preferences saved.");
   };
-
-  const handleSaveNotifications = () => {
-    // In a real implementation, this would save to the backend
-    toast.success("Notification preferences updated!");
-  };
-
-  if (!isAuthenticated) {
-    return (
-      <Layout>
-        <div className="container py-20 text-center">
-          <h1 className="text-2xl font-bold mb-4">Please sign in to access settings</h1>
-          <Button>Sign In</Button>
-        </div>
-      </Layout>
-    );
-  }
 
   return (
     <Layout>
-      <div className="min-h-screen bg-background pb-20">
-        <div className="container pt-8">
-          <div className="max-w-5xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold mb-2">Settings</h1>
-              <p className="text-muted-foreground">
-                Manage your account settings and preferences
-              </p>
-            </div>
-
-            <Tabs defaultValue="profile" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6">
-                <TabsTrigger value="profile">
-                  <User className="w-4 h-4 mr-2" />
-                  Profile
-                </TabsTrigger>
-                <TabsTrigger value="notifications">
-                  <Bell className="w-4 h-4 mr-2" />
-                  Notifications
-                </TabsTrigger>
-                <TabsTrigger value="billing">
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Billing
-                </TabsTrigger>
-                <TabsTrigger value="creator">
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  Creator
-                </TabsTrigger>
-                <TabsTrigger value="prayer" className="hidden lg:flex">
-                  <BookHeart className="w-4 h-4 mr-2" />
-                  Prayer Journal
-                </TabsTrigger>
-                <TabsTrigger value="privacy" className="hidden lg:flex">
-                  <Shield className="w-4 h-4 mr-2" />
-                  Privacy
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Profile Settings */}
-              <TabsContent value="profile" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Profile Picture</CardTitle>
-                    <CardDescription>Upload your profile photo</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center gap-6">
-                      <Avatar className="w-24 h-24">
-                        <AvatarImage src={user?.avatarUrl || undefined} />
-                        <AvatarFallback className="text-2xl">
-                          {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <Button size="sm" variant="outline">
-                          <Upload className="w-4 h-4 mr-2" />
-                          Upload Photo
-                        </Button>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          JPG, PNG or GIF. Max size 5MB.
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Basic Information</CardTitle>
-                    <CardDescription>Update your personal details</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid gap-4 md:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label htmlFor="username">Username *</Label>
-                        <div className="relative">
-                          <span className="absolute left-3 top-2.5 text-muted-foreground">@</span>
-                          <Input
-                            id="username"
-                            value={profileForm.username}
-                            onChange={(e) =>
-                              setProfileForm({ ...profileForm, username: e.target.value })
-                            }
-                            className="pl-7"
-                            placeholder="yourname"
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Used for mentions and community participation
-                        </p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Display Name</Label>
-                        <Input
-                          id="name"
-                          value={profileForm.name}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, name: e.target.value })
-                          }
-                          placeholder="John Doe"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="nickname">Nickname</Label>
-                        <Input
-                          id="nickname"
-                          value={profileForm.nickname}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, nickname: e.target.value })
-                          }
-                          placeholder="Optional"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="age">Age</Label>
-                        <Input
-                          id="age"
-                          type="number"
-                          value={profileForm.age}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, age: e.target.value })
-                          }
-                          placeholder="Optional"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="church">Church</Label>
-                        <Input
-                          id="church"
-                          value={profileForm.church}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, church: e.target.value })
-                          }
-                          placeholder="Your church name"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="doctrine">Christian Doctrine</Label>
-                        <Select value={profileForm.doctrine} onValueChange={(value) => setProfileForm({ ...profileForm, doctrine: value })}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select doctrine" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="catholic">Catholic</SelectItem>
-                            <SelectItem value="protestant">Protestant</SelectItem>
-                            <SelectItem value="orthodox">Orthodox</SelectItem>
-                            <SelectItem value="anglican">Anglican</SelectItem>
-                            <SelectItem value="baptist">Baptist</SelectItem>
-                            <SelectItem value="pentecostal">Pentecostal</SelectItem>
-                            <SelectItem value="methodist">Methodist</SelectItem>
-                            <SelectItem value="lutheran">Lutheran</SelectItem>
-                            <SelectItem value="other">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="bio">Bio</Label>
-                      <Textarea
-                        id="bio"
-                        value={profileForm.bio}
-                        onChange={(e) =>
-                          setProfileForm({ ...profileForm, bio: e.target.value })
-                        }
-                        placeholder="Tell us about yourself..."
-                        rows={4}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        {profileForm.bio.length}/500 characters
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="interests">Interests</Label>
-                      <Input
-                        id="interests"
-                        value={profileForm.interests}
-                        onChange={(e) =>
-                          setProfileForm({ ...profileForm, interests: e.target.value })
-                        }
-                        placeholder="Prayer, Bible Study, Worship (comma-separated)"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Social Media</CardTitle>
-                    <CardDescription>Connect your social media accounts</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="instagram">Instagram</Label>
-                      <div className="flex gap-2">
-                        <Instagram className="w-5 h-5 text-muted-foreground mt-2" />
-                        <Input
-                          id="instagram"
-                          value={profileForm.instagramHandle}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, instagramHandle: e.target.value })
-                          }
-                          placeholder="@username"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="twitter">Twitter / X</Label>
-                      <div className="flex gap-2">
-                        <Twitter className="w-5 h-5 text-muted-foreground mt-2" />
-                        <Input
-                          id="twitter"
-                          value={profileForm.twitterHandle}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, twitterHandle: e.target.value })
-                          }
-                          placeholder="@username"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="facebook">Facebook</Label>
-                      <div className="flex gap-2">
-                        <Facebook className="w-5 h-5 text-muted-foreground mt-2" />
-                        <Input
-                          id="facebook"
-                          value={profileForm.facebookHandle}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, facebookHandle: e.target.value })
-                          }
-                          placeholder="Profile URL"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="youtube">YouTube</Label>
-                      <div className="flex gap-2">
-                        <Youtube className="w-5 h-5 text-muted-foreground mt-2" />
-                        <Input
-                          id="youtube"
-                          value={profileForm.youtubeHandle}
-                          onChange={(e) =>
-                            setProfileForm({ ...profileForm, youtubeHandle: e.target.value })
-                          }
-                          placeholder="Channel URL"
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="flex justify-end">
-                  <Button onClick={handleSaveProfile} disabled={updateMutation.isPending}>
-                    <Save className="w-4 h-4 mr-2" />
-                    {updateMutation.isPending ? "Saving..." : "Save Changes"}
-                  </Button>
-                </div>
-              </TabsContent>
-
-              {/* Notification Settings */}
-              <TabsContent value="notifications" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Notification Preferences</CardTitle>
-                    <CardDescription>
-                      Choose how you want to be notified about updates
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Email Notifications</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Receive notifications via email
-                          </p>
-                        </div>
-                        <Switch
-                          checked={notificationPrefs.emailNotifications}
-                          onCheckedChange={(checked) =>
-                            setNotificationPrefs({ ...notificationPrefs, emailNotifications: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Push Notifications</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Receive push notifications on your device
-                          </p>
-                        </div>
-                        <Switch
-                          checked={notificationPrefs.pushNotifications}
-                          onCheckedChange={(checked) =>
-                            setNotificationPrefs({ ...notificationPrefs, pushNotifications: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Cell Group Updates</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Get notified about new meetings and updates
-                          </p>
-                        </div>
-                        <Switch
-                          checked={notificationPrefs.cellGroupUpdates}
-                          onCheckedChange={(checked) =>
-                            setNotificationPrefs({ ...notificationPrefs, cellGroupUpdates: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Reel Likes & Comments</Label>
-                          <p className="text-sm text-muted-foreground">
-                            When someone likes or comments on your reels
-                          </p>
-                        </div>
-                        <Switch
-                          checked={notificationPrefs.reelLikes}
-                          onCheckedChange={(checked) =>
-                            setNotificationPrefs({ ...notificationPrefs, reelLikes: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>New Followers</Label>
-                          <p className="text-sm text-muted-foreground">
-                            When someone follows you
-                          </p>
-                        </div>
-                        <Switch
-                          checked={notificationPrefs.newFollowers}
-                          onCheckedChange={(checked) =>
-                            setNotificationPrefs({ ...notificationPrefs, newFollowers: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Weekly Digest</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Summary of your week's activity
-                          </p>
-                        </div>
-                        <Switch
-                          checked={notificationPrefs.weeklyDigest}
-                          onCheckedChange={(checked) =>
-                            setNotificationPrefs({ ...notificationPrefs, weeklyDigest: checked })
-                          }
-                        />
-                      </div>
-
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label>Product Updates</Label>
-                          <p className="text-sm text-muted-foreground">
-                            News about new features and updates
-                          </p>
-                        </div>
-                        <Switch
-                          checked={notificationPrefs.productUpdates}
-                          onCheckedChange={(checked) =>
-                            setNotificationPrefs({ ...notificationPrefs, productUpdates: checked })
-                          }
-                        />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <div className="flex justify-end">
-                  <Button onClick={handleSaveNotifications}>
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Preferences
-                  </Button>
-                </div>
-              </TabsContent>
-
-              {/* Billing Settings */}
-              <TabsContent value="billing" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Subscription Plan</CardTitle>
-                    <CardDescription>Manage your mannuh pledge</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                        <div>
-                          <p className="font-semibold">Freemium</p>
-                          <p className="text-sm text-muted-foreground">$0/month</p>
-                        </div>
-                        <Badge variant="secondary">Current Plan</Badge>
-                      </div>
-                      <Button asChild className="w-full">
-                        <a href="/pricing">Upgrade to Premium</a>
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Credits Balance</CardTitle>
-                    <CardDescription>
-                      Use credits for premium features and content
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center py-6">
-                      <p className="text-4xl font-bold mb-2">0</p>
-                      <p className="text-sm text-muted-foreground mb-4">Available Credits</p>
-                      <Button variant="outline">Earn More Credits</Button>
-                    </div>
-                    <div className="mt-6 text-sm text-muted-foreground">
-                      <p className="font-semibold mb-2">How to earn credits:</p>
-                      <ul className="list-disc list-inside space-y-1">
-                        <li>Complete your profile (+10 credits)</li>
-                        <li>Join a cell group (+5 credits)</li>
-                        <li>Post your first reel (+20 credits)</li>
-                        <li>Invite friends (+15 credits per friend)</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Creator Settings */}
-              <TabsContent value="creator" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Creator Mode</CardTitle>
-                    <CardDescription>
-                      Enable creator privileges to post content and earn revenue
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                      <div>
-                        <Label className="text-base">Creator Mode</Label>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Available to Premium members only
-                        </p>
-                      </div>
-                      <Switch checked={isCreatorMode} disabled />
-                    </div>
-
-                    <div className="space-y-4">
-                      <h4 className="font-semibold">Creator Benefits:</h4>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        <li className="flex items-start gap-2">
-                          <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                          <span>Post reels, articles, and stories</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                          <span>Earn ad revenue based on views and engagement</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                          <span>Access creator analytics dashboard</span>
-                        </li>
-                        <li className="flex items-start gap-2">
-                          <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                          <span>Priority support and resources</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <Button asChild className="w-full">
-                      <a href="/pricing">Upgrade to Premium</a>
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Creator Partner Program</CardTitle>
-                    <CardDescription>
-                      Learn more about monetizing your content
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4">
-                      Join our Creator Partner Program and start earning from your faith-based content.
-                      Share your story, inspire others, and get compensated for your creativity.
-                    </p>
-                    <Button variant="outline" asChild className="w-full">
-                      <a href="/partner">Learn More</a>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Prayer Journal Tab (Premium Feature) */}
-              <TabsContent value="prayer" className="space-y-6">
-                {user?.isPremium ? (
-                  <PrayerJournal />
-                ) : (
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Prayer Journal</CardTitle>
-                      <CardDescription>Premium Feature</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <BookHeart className="w-16 h-16 text-muted-foreground mb-4" />
-                        <h3 className="text-lg font-semibold mb-2">
-                          Prayer Journal is a Premium Feature
-                        </h3>
-                        <p className="text-sm text-muted-foreground max-w-md mb-6">
-                          Track your prayer requests, celebrate answered prayers, and grow in your faith journey with our Prayer Journal feature.
-                        </p>
-                        <Button asChild>
-                          <a href="/pricing">
-                            Upgrade to Premium
-                          </a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </TabsContent>
-
-              {/* Privacy Settings */}
-              <TabsContent value="privacy" className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Privacy & Security</CardTitle>
-                    <CardDescription>Control your privacy settings</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>Profile Visibility</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Make your profile visible to everyone
-                        </p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>Activity Status</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Show when you're online
-                        </p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label>Allow Messages</Label>
-                        <p className="text-sm text-muted-foreground">
-                          Let others send you direct messages
-                        </p>
-                      </div>
-                      <Switch defaultChecked />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Data & Account</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      Download Your Data
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start text-destructive">
-                      Delete Account
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
+      <div className="container py-10 max-w-5xl space-y-6">
+        <div>
+          <h1 className="text-3xl font-black">Profile & Preferences</h1>
+          <p className="text-muted-foreground">Free users get basic profiles. Premium unlocks advanced customization.</p>
+          <Badge className="mt-2" variant={isPremium ? "default" : "secondary"}>{isPremium ? "Premium profile" : "Free profile"}</Badge>
         </div>
+
+        <Card>
+          <CardHeader><CardTitle>Basic profile</CardTitle></CardHeader>
+          <CardContent className="grid md:grid-cols-2 gap-4">
+            <Input value={profile.displayName} onChange={(e) => setProfile({ ...profile, displayName: e.target.value })} placeholder="Display name" />
+            <div>
+              <Input value={profile.username} onChange={(e) => setProfile({ ...profile, username: e.target.value })} placeholder="@username" />
+              {usernameError && <p className="text-xs text-red-500 mt-1">{usernameError}</p>}
+            </div>
+            <Select value={profile.profileVisibility} onValueChange={(v) => setProfile({ ...profile, profileVisibility: v })}>
+              <SelectTrigger><SelectValue placeholder="Profile visibility" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="public">Public</SelectItem>
+                <SelectItem value="private">Private</SelectItem>
+              </SelectContent>
+            </Select>
+            <label className="flex items-center gap-2 text-sm"><Switch checked={profile.aiOptIn} onCheckedChange={(v) => setProfile({ ...profile, aiOptIn: v })} /> AI data collection opt-in</label>
+          </CardContent>
+        </Card>
+
+        <Card className={!isPremium ? "opacity-70" : ""}>
+          <CardHeader><CardTitle>Premium customization</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            {!isPremium && <p className="text-sm text-muted-foreground">Upgrade to unlock testimony, gifts, creator mode, languages/currency/timezone persistence, block list, muted content, and donations.</p>}
+            <Textarea disabled={!isPremium} value={profile.testimony} onChange={(e) => setProfile({ ...profile, testimony: e.target.value })} placeholder="Testimony (optional)" />
+            <Input disabled={!isPremium} value={profile.spiritualGifts} onChange={(e) => setProfile({ ...profile, spiritualGifts: e.target.value })} placeholder="Spiritual gifts / serving interests" />
+            <div className="grid md:grid-cols-3 gap-3">
+              <Input disabled={!isPremium} value={profile.languages} onChange={(e) => setProfile({ ...profile, languages: e.target.value })} placeholder="Languages" />
+              <Input disabled={!isPremium} value={profile.currency} onChange={(e) => setProfile({ ...profile, currency: e.target.value })} placeholder="Currency" />
+              <Input disabled={!isPremium} value={profile.timezone} onChange={(e) => setProfile({ ...profile, timezone: e.target.value })} placeholder="Timezone" />
+            </div>
+            <Input disabled={!isPremium} value={profile.blockedUsers} onChange={(e) => setProfile({ ...profile, blockedUsers: e.target.value })} placeholder="Block list (comma separated)" />
+            <Input disabled={!isPremium} value={profile.mutedContent} onChange={(e) => setProfile({ ...profile, mutedContent: e.target.value })} placeholder="Muted content keywords" />
+            <label className="flex items-center gap-2 text-sm"><Switch disabled={!isPremium} checked={profile.creatorMode} onCheckedChange={(v) => setProfile({ ...profile, creatorMode: v })} /> Creator mode (requires KYC verification)</label>
+            <label className="flex items-center gap-2 text-sm"><Switch disabled={!isPremium || !profile.kycVerified || !profile.creatorMode} checked={profile.tipsEnabled} onCheckedChange={(v) => setProfile({ ...profile, tipsEnabled: v })} /> Accept tips/donations (verified creators only)</label>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Personalized recommendations setup</CardTitle></CardHeader>
+          <CardContent className="grid md:grid-cols-2 gap-3">
+            <Select value={profile.goals} onValueChange={(v) => setProfile({ ...profile, goals: v })}>
+              <SelectTrigger><SelectValue placeholder="What are you here for?" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="community">Community</SelectItem>
+                <SelectItem value="learning">Learning</SelectItem>
+                <SelectItem value="creating">Creating</SelectItem>
+                <SelectItem value="prayer">Prayer</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input value={profile.church} onChange={(e) => setProfile({ ...profile, church: e.target.value })} placeholder="Church/ministry you attend" />
+            <Input value={profile.denomination} onChange={(e) => setProfile({ ...profile, denomination: e.target.value })} placeholder="Doctrine/denomination" />
+            <Input value={profile.prayerPoints} onChange={(e) => setProfile({ ...profile, prayerPoints: e.target.value })} placeholder="Prayer points requests" />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader><CardTitle>Auto recommendations preview</CardTitle></CardHeader>
+          <CardContent className="text-sm space-y-2">
+            <p>Featured cell groups (3): Romans Road Deep Dive, Intercessors Unite, Legacy Builders for Couples.</p>
+            <p>Article topics (5): Prayer life, Identity in Christ, Anxiety and peace, Missions, Biblical stewardship.</p>
+            <p>Verified creators (3): @pastorjane, @missionmichael, @worshipwithada.</p>
+          </CardContent>
+        </Card>
+
+        <Button onClick={save}>Save settings</Button>
       </div>
-      <Footer />
     </Layout>
   );
 }

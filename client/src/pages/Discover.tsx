@@ -1,216 +1,159 @@
-import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { useMemo, useState } from "react";
+import { Link } from "wouter";
+import { Crown, ExternalLink, Eye, Newspaper } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Compass, ExternalLink, RefreshCw, BookOpen, Headphones, Video, Newspaper, PenTool } from "lucide-react";
-import { useState, useMemo } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { externalArticlesSeed } from "@/data/externalArticles";
+import { premiumArticlesSeed } from "@/data/premiumArticles";
 
-const contentCategories = [
-  "All", "faith", "prayer", "worship", "bible-study", "testimony", "devotional", "community"
-];
-
-const contentTypeIcons: Record<string, any> = {
-  article: Newspaper,
-  video: Video,
-  podcast: Headphones,
-  blog: PenTool,
-  news: Newspaper,
-};
+type ExitState = { title: string; url: string } | null;
 
 export default function Discover() {
-  const { isAuthenticated } = useAuth();
-  const [category, setCategory] = useState("All");
-  const [contentType, setContentType] = useState<string | undefined>(undefined);
+  const { user } = useAuth();
+  const isPremiumUser = (user as any)?.subscription === "premium" || (user as any)?.isPremium;
+  const [query, setQuery] = useState("");
+  const [selectedExternalId, setSelectedExternalId] = useState<string | null>(null);
+  const [exitState, setExitState] = useState<ExitState>(null);
+  const [countdown, setCountdown] = useState(10);
 
-  const stableCategory = useMemo(() => (category === "All" ? undefined : category), [category]);
+  const selectedExternal = externalArticlesSeed.find((article) => article.id === selectedExternalId) ?? null;
 
-  const contentQuery = trpc.discover.content.useQuery({
-    category: stableCategory,
-    contentType,
-    limit: 30,
-  });
+  const filteredPremium = useMemo(
+    () => premiumArticlesSeed.filter((article) => `${article.title} ${article.category} ${article.tags.join(" ")}`.toLowerCase().includes(query.toLowerCase())),
+    [query],
+  );
 
-  const tagsQuery = trpc.discover.tags.useQuery();
-  const utils = trpc.useUtils();
+  const filteredExternal = useMemo(
+    () => externalArticlesSeed.filter((article) => `${article.title} ${article.sourceName} ${article.tags.join(" ")}`.toLowerCase().includes(query.toLowerCase())),
+    [query],
+  );
 
-  const aggregateMutation = trpc.discover.aggregate.useMutation({
-    onSuccess: () => {
-      utils.discover.content.invalidate();
-      utils.discover.tags.invalidate();
-    },
-  });
-
-  const content = contentQuery.data || [];
-  const tags = tagsQuery.data || [];
+  const triggerExternalRedirect = (title: string, url: string) => {
+    setSelectedExternalId(null);
+    setExitState({ title, url });
+    setCountdown(10);
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          window.open(url, "_blank", "noopener,noreferrer");
+          setExitState(null);
+          return 10;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   return (
-    <div className="container py-10">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-foreground">Discover</h1>
-          <p className="text-muted-foreground mt-1 font-light">Curated Christian stories, articles, and resources</p>
+    <div className="container py-10 space-y-8">
+      <div>
+        <h1 className="text-3xl font-black tracking-tight">Discover</h1>
+        <p className="text-muted-foreground">Explore premium storybooks and aggregated Christian articles.</p>
+      </div>
+
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search stories, tags, topics..."
+        className="w-full rounded-lg border border-border bg-background px-3 py-2"
+      />
+
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold">Premium Storybooks</h2>
+          <Badge className="bg-amber-500 text-white">{filteredPremium.length} Premium</Badge>
         </div>
-        {isAuthenticated && (
-          <Button
-            variant="outline"
-            className="rounded-xl bg-white"
-            onClick={() => aggregateMutation.mutate()}
-            disabled={aggregateMutation.isPending}
-          >
-            <RefreshCw className={`w-4 h-4 mr-2 ${aggregateMutation.isPending ? "animate-spin" : ""}`} />
-            {aggregateMutation.isPending ? "Aggregating..." : "Refresh Content"}
-          </Button>
-        )}
-      </div>
-
-      {/* Popular Tags */}
-      {tags.length > 0 && (
-        <div className="mb-8">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">Trending Topics</h3>
-          <div className="flex flex-wrap gap-2">
-            {tags.slice(0, 15).map((tag) => (
-              <Badge
-                key={tag.id}
-                variant="secondary"
-                className="cursor-pointer hover:bg-primary/10 hover:text-primary transition-colors"
-              >
-                {tag.name}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Category Filter */}
-      <div className="flex gap-2 flex-wrap mb-6">
-        {contentCategories.map(c => (
-          <button
-            key={c}
-            onClick={() => setCategory(c)}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize ${
-              category === c
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            {c === "All" ? "All" : c.replace("-", " ")}
-          </button>
-        ))}
-      </div>
-
-      {/* Content Type Filter */}
-      <div className="flex gap-2 mb-8">
-        {["article", "video", "podcast", "blog", "news"].map(type => {
-          const Icon = contentTypeIcons[type] || Newspaper;
-          return (
-            <button
-              key={type}
-              onClick={() => setContentType(contentType === type ? undefined : type)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors capitalize ${
-                contentType === type
-                  ? "bg-[oklch(0.85_0.06_10)] text-[oklch(0.35_0.08_10)]"
-                  : "bg-white border border-border/50 text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              {type}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Content Grid */}
-      {contentQuery.isLoading ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i}><CardContent className="p-5"><Skeleton className="h-40" /></CardContent></Card>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredPremium.map((article) => (
+            <Card key={article.id} className="h-full">
+              <CardContent className="p-5 space-y-3">
+                <img src={article.imageUrl} alt={article.title} className="w-full h-40 rounded-lg object-cover" />
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="bg-amber-500/10 text-amber-700"><Crown className="w-3 h-3 mr-1" />Premium</Badge>
+                  <Badge variant="outline">{article.category}</Badge>
+                </div>
+                <h3 className="font-bold line-clamp-2">{article.title}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-3">{article.excerpt}</p>
+                {!isPremiumUser && (
+                  <div className="rounded-md border border-amber-500/30 bg-amber-50 p-2 text-xs text-amber-700">
+                    Free preview only. Upgrade to unlock the full story and the full mannuh experience for $9.99/month.
+                  </div>
+                )}
+                <Link href={`/articles/${article.slug}`}>
+                  <Button className="w-full">{isPremiumUser ? "Read story" : "Preview story"}</Button>
+                </Link>
+              </CardContent>
+            </Card>
           ))}
         </div>
-      ) : content.length > 0 ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {content.map((item) => {
-            const Icon = contentTypeIcons[item.contentType] || Newspaper;
-            let itemTags: string[] = [];
-            try { itemTags = item.tags ? JSON.parse(item.tags) : []; } catch {}
+      </section>
 
-            return (
-              <a
-                key={item.id}
-                href={item.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block"
-              >
-                <Card className="hover:shadow-md transition-all cursor-pointer group h-full">
-                  <CardContent className="p-6">
-                    {/* Image */}
-                    {item.imageUrl && (
-                      <div className="aspect-video rounded-xl overflow-hidden mb-4 bg-muted">
-                        <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
-                      </div>
-                    )}
-
-                    {/* Type badge */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <Badge variant="secondary" className="text-xs capitalize flex items-center gap-1">
-                        <Icon className="w-3 h-3" />
-                        {item.contentType}
-                      </Badge>
-                      {item.category && (
-                        <Badge variant="outline" className="text-xs capitalize">{item.category.replace("-", " ")}</Badge>
-                      )}
-                    </div>
-
-                    {/* Title & Description */}
-                    <h3 className="font-bold text-foreground line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-                      {item.title}
-                    </h3>
-                    {item.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-3 mb-3">{item.description}</p>
-                    )}
-
-                    {/* Source */}
-                    <div className="flex items-center justify-between">
-                      {item.sourceName && (
-                        <span className="text-xs text-muted-foreground">{item.sourceName}</span>
-                      )}
-                      <ExternalLink className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
-
-                    {/* Tags */}
-                    {itemTags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {itemTags.slice(0, 3).map((tag: string) => (
-                          <span key={tag} className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </a>
-            );
-          })}
+      <section className="space-y-4">
+        <h2 className="text-xl font-bold">From Christian Publications</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredExternal.map((article) => (
+            <Card key={article.id} className="h-full">
+              <CardContent className="p-5 space-y-3">
+                <img src={article.imageUrl} alt={article.title} className="w-full h-40 rounded-lg object-cover" />
+                <Badge variant="outline">{article.sourceName}</Badge>
+                <h3 className="font-bold line-clamp-2">{article.title}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-3">{article.excerpt}</p>
+                <Button variant="outline" className="w-full" onClick={() => setSelectedExternalId(article.id)}>
+                  <Eye className="w-4 h-4 mr-2" /> Preview external article
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      ) : (
-        <div className="text-center py-20">
-          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-            <Compass className="w-7 h-7 text-muted-foreground" />
-          </div>
-          <h3 className="font-bold text-foreground mb-1">No content yet</h3>
-          <p className="text-sm text-muted-foreground mb-4">Click "Refresh Content" to aggregate Christian content from the web</p>
-          {isAuthenticated && (
-            <Button onClick={() => aggregateMutation.mutate()} disabled={aggregateMutation.isPending} className="rounded-xl">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Aggregate Content
-            </Button>
+      </section>
+
+      <Dialog open={Boolean(selectedExternal)} onOpenChange={() => setSelectedExternalId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>External article preview</DialogTitle>
+            <DialogDescription>Preview this source before leaving mannuh.</DialogDescription>
+          </DialogHeader>
+          {selectedExternal && (
+            <div className="space-y-3">
+              <img src={selectedExternal.imageUrl} alt={selectedExternal.title} className="w-full h-44 object-cover rounded-md" />
+              <p className="text-xs uppercase text-muted-foreground">{selectedExternal.sourceName}</p>
+              <h3 className="text-lg font-bold">{selectedExternal.title}</h3>
+              <p className="text-sm text-muted-foreground">{selectedExternal.excerpt}</p>
+            </div>
           )}
-        </div>
-      )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedExternalId(null)}>Close</Button>
+            {selectedExternal && (
+              <Button onClick={() => triggerExternalRedirect(selectedExternal.title, selectedExternal.sourceUrl)}>
+                <ExternalLink className="w-4 h-4 mr-2" /> Continue Reading
+              </Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={Boolean(exitState)} onOpenChange={() => setExitState(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>You are being redirected to another website</DialogTitle>
+            <DialogDescription>
+              Click here or tap the reload button in your browser if the page doesn&apos;t load automatically within 10 seconds.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-md border bg-muted p-3 text-sm">
+            <p className="font-medium">{exitState?.title}</p>
+            <p className="text-muted-foreground flex items-center gap-2"><Newspaper className="w-3 h-3" /> Redirecting in {countdown}s</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExitState(null)}>Go back</Button>
+            {exitState && <Button onClick={() => window.open(exitState.url, "_blank", "noopener,noreferrer")}>Open now</Button>}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,228 +1,125 @@
-import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { useMemo, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { Users, Plus, Search, MapPin, Calendar } from "lucide-react";
-import { Link } from "wouter";
-import { useState, useMemo } from "react";
+import { Switch } from "@/components/ui/switch";
+import { Users } from "lucide-react";
+import { cellGroupsSeed } from "@/data/cellGroups";
 import { toast } from "sonner";
 
-const categories = [
-  "All", "Bible Study", "Prayer", "Worship", "Youth", "Women", "Men", "Couples", "Family", "Missions"
-];
+type TutorialStep = 1 | 2 | 3;
+
+const categories = ["All", "Bible Study", "Prayer", "Missions", "Family", "Youth", "Women", "Men", "Couples", "Worship"];
 
 export default function Groups() {
-  const { isAuthenticated } = useAuth();
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
-  const [createOpen, setCreateOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [tutorialStep, setTutorialStep] = useState<TutorialStep>(1);
+  const [agreed, setAgreed] = useState(false);
 
-  const stableSearch = useMemo(() => search, [search]);
-  const stableCategory = useMemo(() => (category === "All" ? undefined : category), [category]);
+  const filtered = useMemo(
+    () => cellGroupsSeed.filter((group) =>
+      (category === "All" || group.category === category) &&
+      (`${group.name} ${group.description} ${group.tags.join(" ")}`.toLowerCase().includes(search.toLowerCase()))),
+    [category, search],
+  );
 
-  const groupsQuery = trpc.groups.list.useQuery({
-    search: stableSearch || undefined,
-    category: stableCategory,
-    limit: 50,
-  });
+  const selectedGroup = cellGroupsSeed.find((group) => group.id === selectedId) ?? null;
 
-  const myGroupsQuery = trpc.groups.myGroups.useQuery(undefined, { enabled: isAuthenticated });
-  const utils = trpc.useUtils();
+  const handleJoin = (id: string) => {
+    const group = cellGroupsSeed.find((item) => item.id === id);
+    if (!group) return;
+    if (group.privacy === "offline") {
+      toast.error("This group is offline. Joining is disabled until the host activates it.");
+      return;
+    }
+    if (group.privacy === "private") {
+      toast.info("This is a private group. Use an invitation link from the host.");
+      return;
+    }
+    setSelectedId(id);
+    setTutorialStep(1);
+    setAgreed(false);
+  };
 
-  const createMutation = trpc.groups.create.useMutation({
-    onSuccess: () => {
-      utils.groups.list.invalidate();
-      utils.groups.myGroups.invalidate();
-      setCreateOpen(false);
-      toast.success("Cell group created successfully!");
-    },
-  });
-
-  const [form, setForm] = useState({
-    name: "", description: "", category: "Bible Study", maxMembers: 50,
-  });
-
-  const handleCreate = () => {
-    if (!form.name.trim()) return toast.error("Please enter a group name");
-    createMutation.mutate({
-      name: form.name,
-      description: form.description,
-      category: form.category,
-      maxMembers: form.maxMembers,
-    });
+  const completeTutorial = () => {
+    if (!agreed) {
+      toast.error("Please agree to the Community Guidelines and legal policies.");
+      return;
+    }
+    toast.success(`You joined ${selectedGroup?.name}. Welcome!`);
+    setSelectedId(null);
   };
 
   return (
-    <div className="container py-10">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-black tracking-tight text-foreground">Cell Groups</h1>
-          <p className="text-muted-foreground mt-1 font-light">Find your community and grow together in faith</p>
-        </div>
-        {isAuthenticated && (
-          <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-            <DialogTrigger asChild>
-              <Button className="rounded-xl">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Group
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle className="text-xl font-bold">Create a Cell Group</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 mt-4">
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">Group Name</label>
-                  <Input
-                    placeholder="e.g. Morning Prayer Warriors"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">Description</label>
-                  <Textarea
-                    placeholder="What is this group about?"
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    rows={3}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">Category</label>
-                  <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {categories.filter(c => c !== "All").map(c => (
-                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-foreground mb-1.5 block">Max Members</label>
-                  <Input
-                    type="number"
-                    value={form.maxMembers}
-                    onChange={(e) => setForm({ ...form, maxMembers: parseInt(e.target.value) || 50 })}
-                  />
-                </div>
-                <Button onClick={handleCreate} className="w-full rounded-xl" disabled={createMutation.isPending}>
-                  {createMutation.isPending ? "Creating..." : "Create Group"}
-                </Button>
+    <div className="container py-10 space-y-6">
+      <div>
+        <h1 className="text-3xl font-black">Cell Groups</h1>
+        <p className="text-muted-foreground">29 sample groups across Bible Study, Prayer, Missions, Family, Youth, Women, Men, Couples, and Worship.</p>
+      </div>
+
+      <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search groups..." />
+      <div className="flex gap-2 flex-wrap">
+        {categories.map((item) => (
+          <Button key={item} variant={category === item ? "default" : "outline"} size="sm" onClick={() => setCategory(item)}>{item}</Button>
+        ))}
+      </div>
+
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filtered.map((group) => (
+          <Card key={group.id}>
+            <CardContent className="p-5 space-y-3">
+              <div className="flex justify-between items-start gap-3">
+                <h3 className="font-bold">{group.name}</h3>
+                <Badge variant={group.privacy === "public" ? "default" : "secondary"}>{group.privacy}</Badge>
               </div>
-            </DialogContent>
-          </Dialog>
-        )}
+              <p className="text-sm text-muted-foreground line-clamp-3">{group.description}</p>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p className="flex items-center gap-1"><Users className="w-3 h-3" /> {group.currentMemberCount}/{group.maxMembers} members (allowed range: 2-100)</p>
+                <p>DMs: {group.features.dmEnabled ? "Enabled" : "Disabled"}</p>
+                <p>Moderation controls: {group.features.moderationEnabled ? "Reports, bans, strikes, takedown enabled" : "Basic moderation only"}</p>
+                <p>Push notifications: {group.features.pushNotifications ? "Enabled" : "Disabled"}</p>
+              </div>
+              <Button className="w-full" onClick={() => handleJoin(group.id)}>
+                {group.privacy === "public" ? "Join group" : group.privacy === "private" ? "Invite only" : "Currently offline"}
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      {/* My Groups */}
-      {isAuthenticated && myGroupsQuery.data && myGroupsQuery.data.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-lg font-bold text-foreground mb-4">My Groups</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {myGroupsQuery.data.map(({ group }) => (
-              <Link key={group.id} href={`/groups/${group.id}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer border-primary/20 bg-primary/[0.02]">
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="font-bold text-foreground">{group.name}</h3>
-                        {group.category && <Badge variant="secondary" className="mt-1.5 text-xs">{group.category}</Badge>}
-                      </div>
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="w-4 h-4 text-primary" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
+      <Dialog open={Boolean(selectedGroup)} onOpenChange={() => setSelectedId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cell Group Onboarding ({tutorialStep}/3)</DialogTitle>
+            <DialogDescription>{selectedGroup?.name}</DialogDescription>
+          </DialogHeader>
 
-      {/* Search & Filter */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="Search groups..."
-            className="pl-10"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {categories.map(c => (
-            <button
-              key={c}
-              onClick={() => setCategory(c)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                category === c
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-      </div>
+          {tutorialStep === 1 && <p className="text-sm">Welcome! Cell Groups help members grow through weekly prayer, Bible reflection, and shared accountability. You can engage in chats, respond to posts, and receive reminders.</p>}
+          {tutorialStep === 2 && <p className="text-sm">Group Guidelines: be respectful, keep prayer requests private, avoid harassment, and report harmful content. Moderators can issue reports, strikes, bans, and content takedowns.</p>}
+          {tutorialStep === 3 && (
+            <div className="space-y-3 text-sm">
+              <p>Agree to abide by Community Guidelines and legal policies before joining.</p>
+              <label className="flex items-center gap-2">
+                <Switch checked={agreed} onCheckedChange={setAgreed} />
+                <span>I agree to the Terms of Service, Cookie Policy, Privacy Policy, and Community Guidelines.</span>
+              </label>
+            </div>
+          )}
 
-      {/* Groups Grid */}
-      {groupsQuery.isLoading ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i}><CardContent className="p-5"><Skeleton className="h-24" /></CardContent></Card>
-          ))}
-        </div>
-      ) : groupsQuery.data && groupsQuery.data.length > 0 ? (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {groupsQuery.data.map((group) => (
-            <Link key={group.id} href={`/groups/${group.id}`}>
-              <Card className="hover:shadow-md transition-all cursor-pointer group h-full">
-                <CardContent className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center shrink-0 group-hover:bg-primary/10 transition-colors">
-                      <Users className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="font-bold text-foreground truncate">{group.name}</h3>
-                      {group.description && (
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{group.description}</p>
-                      )}
-                      <div className="flex items-center gap-3 mt-3">
-                        {group.category && <Badge variant="secondary" className="text-xs">{group.category}</Badge>}
-                        <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Users className="w-3 h-3" />
-                          {group.maxMembers} max
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20">
-          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-            <Users className="w-7 h-7 text-muted-foreground" />
-          </div>
-          <h3 className="font-bold text-foreground mb-1">No groups found</h3>
-          <p className="text-sm text-muted-foreground">Be the first to create a cell group!</p>
-        </div>
-      )}
+          <DialogFooter>
+            {tutorialStep > 1 && <Button variant="outline" onClick={() => setTutorialStep((tutorialStep - 1) as TutorialStep)}>Back</Button>}
+            {tutorialStep < 3 ? (
+              <Button onClick={() => setTutorialStep((tutorialStep + 1) as TutorialStep)}>Next</Button>
+            ) : (
+              <Button onClick={completeTutorial}>Join Group</Button>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
